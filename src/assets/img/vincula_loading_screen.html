@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VINCULA — Cargando</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0F0A2E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .loader-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    svg.logo { width: 220px; height: 220px; }
+
+    .pulse1 { animation: pulse 2s ease-out infinite; transform-origin: 110px 120px; }
+    .pulse2 { animation: pulse 2s ease-out 0.5s infinite; transform-origin: 110px 120px; }
+    .pulse3 { animation: pulse 2s ease-out 1s infinite; transform-origin: 110px 120px; }
+    .dash-l { animation: dashMove 1.8s linear infinite; }
+    .dash-r { animation: dashMove 1.8s linear 0.6s infinite; }
+
+    @keyframes pulse {
+      0%   { opacity: 0; transform: scale(0.85); }
+      30%  { opacity: 0.45; }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+    @keyframes dashMove {
+      0%   { stroke-dashoffset: 90; opacity: 1; }
+      100% { stroke-dashoffset: 0;  opacity: 0.15; }
+    }
+
+    .wordmark {
+      font-family: Arial, sans-serif;
+      font-size: 36px;
+      font-weight: 500;
+      letter-spacing: 10px;
+      color: #D4CCF5;
+    }
+    .wordmark span { color: #8B6FDB; }
+
+    .tagline {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 3.5px;
+      color: #5B4FAA;
+      margin-top: -20px;
+    }
+
+    /* Progress bar */
+    .bar-wrap {
+      width: 180px;
+      height: 2px;
+      background: #2A1F5C;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #7B5EA7;
+      border-radius: 2px;
+      animation: load 2.4s ease-in-out infinite;
+    }
+    @keyframes load {
+      0%   { width: 0%;   opacity: 1; }
+      80%  { width: 100%; opacity: 1; }
+      100% { width: 100%; opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader-wrap">
+
+    <svg class="logo" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Pulse rings -->
+      <circle class="pulse1" cx="110" cy="120" r="28" fill="none" stroke="#6B4FBB" stroke-width="1.5"/>
+      <circle class="pulse2" cx="110" cy="120" r="42" fill="none" stroke="#8B6FDB" stroke-width="1.1"/>
+      <circle class="pulse3" cx="110" cy="120" r="56" fill="none" stroke="#A89EE8" stroke-width="0.8"/>
+
+      <!-- V ghost -->
+      <polyline points="64,28 110,120 156,28" fill="none" stroke="#6B4FBB" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.18"/>
+
+      <!-- Dashes -->
+      <polyline class="dash-l" points="110,120 64,28" fill="none" stroke="#7B5EA7" stroke-width="3" stroke-dasharray="7 5" stroke-dashoffset="90" stroke-linecap="round"/>
+      <polyline class="dash-r" points="110,120 156,28" fill="none" stroke="#9B7FDB" stroke-width="3" stroke-dasharray="7 5" stroke-dashoffset="90" stroke-linecap="round"/>
+
+      <!-- Dots -->
+      <circle cx="110" cy="120" r="8" fill="#2A1F5C"/>
+      <circle cx="110" cy="120" r="4.5" fill="#7B5EA7"/>
+      <circle cx="64"  cy="28"  r="6"  fill="#6B4FBB"/>
+      <circle cx="156" cy="28"  r="6"  fill="#6B4FBB"/>
+      <circle cx="87"  cy="77"  r="3"  fill="#A89EE8" opacity="0.7"/>
+      <circle cx="133" cy="77"  r="3"  fill="#A89EE8" opacity="0.7"/>
+    </svg>
+
+    <div class="wordmark"><span>V</span>INCULA</div>
+    <div class="tagline">educación · comunidad · conexión</div>
+    <div class="bar-wrap"><div class="bar-fill"></div></div>
+
+  </div>
+</body>
+</html>

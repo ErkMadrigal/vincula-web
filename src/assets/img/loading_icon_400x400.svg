@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <defs>
+    <style>
+      .p1{animation:p 2s ease-out infinite;transform-origin:200.0px 248.0px;}
+      .p2{animation:p 2s ease-out 0.55s infinite;transform-origin:200.0px 248.0px;}
+      .p3{animation:p 2s ease-out 1.1s infinite;transform-origin:200.0px 248.0px;}
+      .dl{animation:dm 1.8s linear infinite;}
+      .dr{animation:dm 1.8s linear 0.6s infinite;}
+      @keyframes p{
+        0%{opacity:0;transform:scale(0.82);}
+        28%{opacity:0.55;}
+        100%{opacity:0;transform:scale(1.22);}
+      }
+      @keyframes dm{
+        0%{stroke-dashoffset:248.0;opacity:1;}
+        100%{stroke-dashoffset:0;opacity:0.12;}
+      }
+    </style></defs>
+  <rect width="400" height="400" fill="#0F0A2E" rx="48"/>
+  <circle class="p1" cx="200.0" cy="248.0" r="57.99999999999999" fill="none" stroke="#6B4FBB" stroke-width="3.5999999999999996"/>
+  <circle class="p2" cx="200.0" cy="248.0" r="86.0" fill="none" stroke="#8B6FDB" stroke-width="2.8000000000000003"/>
+  <circle class="p3" cx="200.0" cy="248.0" r="113.99999999999999" fill="none" stroke="#A89EE8" stroke-width="2.0"/>
+  <polyline points="87.99999999999999,64.0 200.0,248.0 312.0,64.0" fill="none" stroke="#6B4FBB" stroke-width="16.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.18"/>
+  <polyline class="dl" points="200.0,248.0 87.99999999999999,64.0" fill="none" stroke="#7B5EA7" stroke-width="15.2" stroke-dasharray="22.0 15.2" stroke-dashoffset="248.0" stroke-linecap="round"/>
+  <polyline class="dr" points="200.0,248.0 312.0,64.0" fill="none" stroke="#9B7FDB" stroke-width="15.2" stroke-dasharray="22.0 15.2" stroke-dashoffset="248.0" stroke-linecap="round"/>
+  <circle cx="200.0" cy="248.0" r="22.0" fill="#1A0F4A"/>
+  <circle cx="200.0" cy="248.0" r="12.8" fill="#7B5EA7"/>
+  <circle cx="87.99999999999999" cy="64.0" r="18.0" fill="#6B4FBB"/>
+  <circle cx="312.0" cy="64.0" r="18.0" fill="#6B4FBB"/>
+  <circle cx="152.95999999999998" cy="160.0" r="14.000000000000002" fill="#A89EE8" opacity="0.7"/>
+  <circle cx="247.04000000000002" cy="160.0" r="14.000000000000002" fill="#A89EE8" opacity="0.7"/>
+      <rect x="72.0" y="336.0" width="256.0" height="7.199999999999999" rx="3.5999999999999996" fill="#1E1252"/>
+      <rect x="72.0" y="336.0" width="0" height="7.199999999999999" rx="3.5999999999999996" fill="#7B5EA7">
+        <animate attributeName="width" from="0" to="256.0" dur="2.4s" repeatCount="indefinite"/>
+      </rect>
+      <text x="200.0" y="312.0" text-anchor="middle" font-family="Arial,sans-serif"
+        font-size="46.0" font-weight="500" letter-spacing="10.12" fill="#D4CCF5">
+        <tspan fill="#8B6FDB">V</tspan>INCULA
+      </text>
+</svg>

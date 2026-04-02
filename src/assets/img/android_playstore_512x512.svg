@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .p1{animation:p 2s ease-out infinite;transform-origin:256.0px 317.44px;}
+      .p2{animation:p 2s ease-out 0.55s infinite;transform-origin:256.0px 317.44px;}
+      .p3{animation:p 2s ease-out 1.1s infinite;transform-origin:256.0px 317.44px;}
+      .dl{animation:dm 1.8s linear infinite;}
+      .dr{animation:dm 1.8s linear 0.6s infinite;}
+      @keyframes p{
+        0%{opacity:0;transform:scale(0.82);}
+        28%{opacity:0.55;}
+        100%{opacity:0;transform:scale(1.22);}
+      }
+      @keyframes dm{
+        0%{stroke-dashoffset:317.44;opacity:1;}
+        100%{stroke-dashoffset:0;opacity:0.12;}
+      }
+    </style></defs>
+  <rect width="512" height="512" fill="#0F0A2E" rx="61"/>
+  <circle class="p1" cx="256.0" cy="317.44" r="74.24" fill="none" stroke="#6B4FBB" stroke-width="4.608"/>
+  <circle class="p2" cx="256.0" cy="317.44" r="110.08" fill="none" stroke="#8B6FDB" stroke-width="3.584"/>
+  <circle class="p3" cx="256.0" cy="317.44" r="145.92" fill="none" stroke="#A89EE8" stroke-width="2.56"/>
+  <polyline points="112.63999999999999,81.92 256.0,317.44 399.36,81.92" fill="none" stroke="#6B4FBB" stroke-width="21.504" stroke-linecap="round" stroke-linejoin="round" opacity="0.18"/>
+  <polyline class="dl" points="256.0,317.44 112.63999999999999,81.92" fill="none" stroke="#7B5EA7" stroke-width="19.456" stroke-dasharray="28.16 19.456" stroke-dashoffset="317.44" stroke-linecap="round"/>
+  <polyline class="dr" points="256.0,317.44 399.36,81.92" fill="none" stroke="#9B7FDB" stroke-width="19.456" stroke-dasharray="28.16 19.456" stroke-dashoffset="317.44" stroke-linecap="round"/>
+  <circle cx="256.0" cy="317.44" r="28.16" fill="#1A0F4A"/>
+  <circle cx="256.0" cy="317.44" r="16.384" fill="#7B5EA7"/>
+  <circle cx="112.63999999999999" cy="81.92" r="23.04" fill="#6B4FBB"/>
+  <circle cx="399.36" cy="81.92" r="23.04" fill="#6B4FBB"/>
+  <circle cx="195.78879999999998" cy="204.8" r="17.92" fill="#A89EE8" opacity="0.7"/>
+  <circle cx="316.2112" cy="204.8" r="17.92" fill="#A89EE8" opacity="0.7"/>
+</svg>

@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-vincula-50: #eef2ff;
+  --color-vincula-100: #e0e7ff;
+  --color-vincula-500: #6366f1;
+  --color-vincula-600: #4f46e5;
+  --color-vincula-700: #4338ca;
+  --color-vincula-800: #3730a3;
+  --color-vincula-900: #312e81;
+}
+
+/* SweetAlert2 — estilos Vincúla */
+.swal-vincula {
+  border-radius: 20px !important;
+  padding: 2rem !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  border: 0.5px solid #ece9f8 !important;
+}
+
+.swal-vincula-title {
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: #1e1252 !important;
+}
+
+.swal-vincula-text {
+  font-size: 14px !important;
+  color: #9b89d4 !important;
+}
+
+.swal-vincula-confirm {
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  padding: 10px 24px !important;
+  font-weight: 500 !important;
+  background-color: #6b4fbb !important;
+}
+
+.swal-vincula-confirm:hover {
+  background-color: #5a3faa !important;
+}
+
+.swal-vincula-cancel {
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  padding: 10px 24px !important;
+  font-weight: 500 !important;
+  background-color: #f4f2fb !important;
+  color: #9b89d4 !important;
+}
+
+.swal-vincula-cancel:hover {
+  background-color: #ece9f8 !important;
+}

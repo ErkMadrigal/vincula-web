@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <style>
+      .p1 { animation: p 2s ease-out infinite; transform-origin: 32px 38px; }
+      .p2 { animation: p 2s ease-out 0.55s infinite; transform-origin: 32px 38px; }
+      .p3 { animation: p 2s ease-out 1.1s infinite; transform-origin: 32px 38px; }
+      .dl { animation: d 1.8s linear infinite; }
+      .dr { animation: d 1.8s linear 0.6s infinite; }
+      @keyframes p {
+        0%  { opacity:0; transform:scale(0.8); }
+        25% { opacity:0.6; }
+        100%{ opacity:0; transform:scale(1.25); }
+      }
+      @keyframes d {
+        0%  { stroke-dashoffset:40; opacity:1; }
+        100%{ stroke-dashoffset:0; opacity:0.1; }
+      }
+    </style>
+  </defs>
+  <rect width="64" height="64" fill="none" rx="14"/>
+  <circle class="p1" cx="32" cy="38" r="9"  fill="none" stroke="#7B5EA7" stroke-width="1"/>
+  <circle class="p2" cx="32" cy="38" r="14" fill="none" stroke="#9B7FDB" stroke-width="0.8"/>
+  <circle class="p3" cx="32" cy="38" r="19" fill="none" stroke="#C4B8F0" stroke-width="0.6"/>
+  <polyline points="16,10 32,38 48,10" fill="none" stroke="#6B4FBB" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.2"/>
+  <polyline class="dl" points="32,38 16,10" fill="none" stroke="#7B5EA7" stroke-width="2" stroke-dasharray="4 3" stroke-dashoffset="40" stroke-linecap="round"/>
+  <polyline class="dr" points="32,38 48,10" fill="none" stroke="#9B7FDB" stroke-width="2" stroke-dasharray="4 3" stroke-dashoffset="40" stroke-linecap="round"/>
+  <circle cx="32" cy="38" r="4.5" fill="#2A1F5C"/>
+  <circle cx="32" cy="38" r="2.5" fill="#7B5EA7"/>
+  <circle cx="16" cy="10" r="3.5" fill="#6B4FBB"/>
+  <circle cx="48" cy="10" r="3.5" fill="#6B4FBB"/>
+</svg>

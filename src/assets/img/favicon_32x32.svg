@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .p1{animation:p 2s ease-out infinite;transform-origin:16.0px 19.84px;}
+      .p2{animation:p 2s ease-out 0.55s infinite;transform-origin:16.0px 19.84px;}
+      .p3{animation:p 2s ease-out 1.1s infinite;transform-origin:16.0px 19.84px;}
+      .dl{animation:dm 1.8s linear infinite;}
+      .dr{animation:dm 1.8s linear 0.6s infinite;}
+      @keyframes p{
+        0%{opacity:0;transform:scale(0.82);}
+        28%{opacity:0.55;}
+        100%{opacity:0;transform:scale(1.22);}
+      }
+      @keyframes dm{
+        0%{stroke-dashoffset:19.84;opacity:1;}
+        100%{stroke-dashoffset:0;opacity:0.12;}
+      }
+    </style></defs>
+  <rect width="32" height="32" fill="#0F0A2E" rx="3"/>
+  <circle class="p1" cx="16.0" cy="19.84" r="4.64" fill="none" stroke="#6B4FBB" stroke-width="0.8"/>
+  <circle class="p2" cx="16.0" cy="19.84" r="6.88" fill="none" stroke="#8B6FDB" stroke-width="0.7"/>
+  <circle class="p3" cx="16.0" cy="19.84" r="9.12" fill="none" stroke="#A89EE8" stroke-width="0.6"/>
+  <polyline points="7.039999999999999,5.12 16.0,19.84 24.96,5.12" fill="none" stroke="#6B4FBB" stroke-width="1.344" stroke-linecap="round" stroke-linejoin="round" opacity="0.18"/>
+  <polyline class="dl" points="16.0,19.84 7.039999999999999,5.12" fill="none" stroke="#7B5EA7" stroke-width="1.216" stroke-dasharray="1.76 1.216" stroke-dashoffset="19.84" stroke-linecap="round"/>
+  <polyline class="dr" points="16.0,19.84 24.96,5.12" fill="none" stroke="#9B7FDB" stroke-width="1.216" stroke-dasharray="1.76 1.216" stroke-dashoffset="19.84" stroke-linecap="round"/>
+  <circle cx="16.0" cy="19.84" r="1.76" fill="#1A0F4A"/>
+  <circle cx="16.0" cy="19.84" r="1.024" fill="#7B5EA7"/>
+  <circle cx="7.039999999999999" cy="5.12" r="1.44" fill="#6B4FBB"/>
+  <circle cx="24.96" cy="5.12" r="1.44" fill="#6B4FBB"/>
+  <circle cx="12.236799999999999" cy="12.8" r="1.12" fill="#A89EE8" opacity="0.7"/>
+  <circle cx="19.7632" cy="12.8" r="1.12" fill="#A89EE8" opacity="0.7"/>
+</svg>
