@@ -8,26 +8,66 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('@/views/auth/LoginView.vue'),
-      meta: { guest: true }
+      meta: { guest: true },
     },
     {
       path: '/',
       component: () => import('@/components/layout/AppLayout.vue'),
       meta: { requiresAuth: true },
       children: [
-        { path: '',              name: 'dashboard',      component: () => import('@/views/admin/DashboardView.vue') },
-        { path: 'asistencias',  name: 'asistencias',    component: () => import('@/views/admin/AsistenciasView.vue') },
-        { path: 'incidencias',  name: 'incidencias',    component: () => import('@/views/admin/IncidenciasView.vue') },
-        { path: 'alumnos',      name: 'alumnos',        component: () => import('@/views/admin/AlumnosView.vue') },
-        { path: 'maestros',     name: 'maestros',       component: () => import('@/views/admin/MaestrosView.vue') },
-        { path: 'avisos',       name: 'avisos',         component: () => import('@/views/admin/AvisosView.vue') },
-        { path: 'calificaciones',name: 'calificaciones',component: () => import('@/views/admin/CalificacionesView.vue') },
-        { path: 'pagos',        name: 'pagos',          component: () => import('@/views/admin/PagosView.vue') },
-        { path: 'carga',        name: 'carga',          component: () => import('@/views/admin/CargaView.vue') },
-        { path: 'qr',           name: 'qr',             component: () => import('@/views/admin/QrView.vue') },
-        { path: 'usuarios', name: 'usuarios', component: () => import('@/views/admin/UsuariosView.vue') },
-      ]
+        { path: '', name: 'dashboard', component: () => import('@/views/admin/DashboardView.vue') },
+        {
+          path: 'asistencias',
+          name: 'asistencias',
+          component: () => import('@/views/admin/AsistenciasView.vue'),
+        },
+        {
+          path: 'incidencias',
+          name: 'incidencias',
+          component: () => import('@/views/admin/IncidenciasView.vue'),
+        },
+        {
+          path: 'alumnos',
+          name: 'alumnos',
+          component: () => import('@/views/admin/AlumnosView.vue'),
+        },
+        {
+          path: 'maestros',
+          name: 'maestros',
+          component: () => import('@/views/admin/MaestrosView.vue'),
+        },
+        { path: 'avisos', name: 'avisos', component: () => import('@/views/admin/AvisosView.vue') },
+        {
+          path: 'calificaciones',
+          name: 'calificaciones',
+          component: () => import('@/views/admin/CalificacionesView.vue'),
+        },
+        { path: 'pagos', name: 'pagos', component: () => import('@/views/admin/PagosView.vue') },
+        { path: 'carga', name: 'carga', component: () => import('@/views/admin/CargaView.vue') },
+        { path: 'qr', name: 'qr', component: () => import('@/views/admin/QrView.vue') },
+        {
+          path: 'usuarios',
+          name: 'usuarios',
+          component: () => import('@/views/admin/UsuariosView.vue'),
+        },
+        {
+          path: 'superadmin',
+          name: 'superadmin',
+          component: () => import('@/views/superadmin/SuperAdminView.vue'),
+        },
+        {
+          path: 'escuelas',
+          name: 'escuelas',
+          component: () => import('@/views/superadmin/EscuelasView.vue'),
+        },
+        {
+          path: 'historial-asistencias',
+          name: 'historial-asistencias',
+          component: () => import('@/views/admin/HistorialAsistenciasView.vue'),
+        },
+      ],
     },
+
     {
       path: '/no-acceso',
       name: 'no-acceso',
@@ -35,8 +75,8 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/'
-    }
+      redirect: '/',
+    },
   ],
 })
 
