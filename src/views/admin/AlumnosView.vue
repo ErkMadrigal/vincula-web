@@ -57,10 +57,21 @@
         />
         <select
           v-model="filtroGrado"
+          @change="filtroGrupo = ''"
           class="px-3 py-2 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
         >
           <option value="">Todos los grados</option>
           <option v-for="g in grados" :key="g" :value="g">{{ g }}</option>
+        </select>
+        <select
+          v-model="filtroGrupo"
+          :disabled="!filtroGrado"
+          class="px-3 py-2 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition disabled:opacity-50"
+        >
+          <option value="">Todos los grupos</option>
+          <option v-for="g in gruposPorGrado(filtroGrado)" :key="g.grupo" :value="g.grupo">
+            {{ g.grupo }} — {{ g.turno }}
+          </option>
         </select>
         <select
           v-model="filtroPago"
@@ -159,14 +170,12 @@
     >
       <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-4">Nuevo alumno</h2>
-
         <div
           v-if="formError"
           class="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600"
         >
           {{ formError }}
         </div>
-
         <div class="space-y-4">
           <div>
             <label class="block text-xs font-medium text-[#6B7280] mb-1.5">CURP</label>
@@ -191,28 +200,33 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Grado</label>
-              <input
+              <select
                 v-model="form.grado"
-                type="text"
-                placeholder="3ro"
-                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] placeholder-[#C4B8F0] focus:outline-none focus:border-[#6B4FBB] transition"
-              />
+                @change="form.grupo = ''"
+                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
+              >
+                <option value="">Selecciona</option>
+                <option v-for="g in grados" :key="g" :value="g">{{ g }}</option>
+              </select>
             </div>
             <div>
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Grupo</label>
-              <input
+              <select
                 v-model="form.grupo"
-                type="text"
-                placeholder="A"
-                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] placeholder-[#C4B8F0] focus:outline-none focus:border-[#6B4FBB] transition"
-              />
+                :disabled="!form.grado"
+                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">Selecciona</option>
+                <option v-for="g in gruposPorGrado(form.grado)" :key="g.grupo" :value="g.grupo">
+                  {{ g.grupo }} — {{ g.turno }}
+                </option>
+              </select>
             </div>
           </div>
           <p class="text-xs text-[#C4B8F0]">
             Se creará automáticamente el acceso a la app con los primeros 8 dígitos de la CURP.
           </p>
         </div>
-
         <div class="flex gap-3 mt-6">
           <button
             @click="cerrarModal"
@@ -239,14 +253,12 @@
     >
       <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-4">Editar alumno</h2>
-
         <div
           v-if="editError"
           class="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600"
         >
           {{ editError }}
         </div>
-
         <div class="space-y-4">
           <div>
             <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Nombre completo</label>
@@ -259,23 +271,30 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Grado</label>
-              <input
+              <select
                 v-model="editForm.grado"
-                type="text"
+                @change="editForm.grupo = ''"
                 class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
-              />
+              >
+                <option value="">Selecciona</option>
+                <option v-for="g in grados" :key="g" :value="g">{{ g }}</option>
+              </select>
             </div>
             <div>
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Grupo</label>
-              <input
+              <select
                 v-model="editForm.grupo"
-                type="text"
-                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
-              />
+                :disabled="!editForm.grado"
+                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">Selecciona</option>
+                <option v-for="g in gruposPorGrado(editForm.grado)" :key="g.grupo" :value="g.grupo">
+                  {{ g.grupo }} — {{ g.turno }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
-
         <div class="flex gap-3 mt-6">
           <button
             @click="showEditModal = false"
@@ -308,7 +327,9 @@
           alt="QR"
           class="w-48 h-48 mx-auto rounded-xl border border-[#ece9f8] mb-4"
         />
-        <p class="text-xs text-[#C4B8F0] mb-4 font-mono">{{ alumnoQR?.uuid }}</p>
+        <p class="text-[10px] text-[#C4B8F0] font-mono mb-4 truncate w-full text-center">
+          {{ alumnoQR?.uuid }}
+        </p>
         <div class="flex gap-3">
           <button
             @click="showQrModal = false"
@@ -322,7 +343,7 @@
             target="_blank"
             class="flex-1 py-2.5 rounded-xl bg-[#6B4FBB] hover:bg-[#5a3faa] text-white text-sm transition text-center"
           >
-            Descargar
+            ⬇ Descargar
           </a>
         </div>
       </div>
@@ -337,18 +358,15 @@
       <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-2">Carga masiva de alumnos</h2>
         <p class="text-xs text-[#9B89D4] mb-4">
-          Sube un archivo .xlsx con columnas: <strong>curp, nombre, grado, grupo</strong>
+          Columnas: <strong>curp, nombre, grado, grupo</strong>
         </p>
-
         <div v-if="cargaResultado" class="mb-4 p-4 rounded-xl bg-[#F4F2FB] border border-[#ece9f8]">
-          <p class="text-sm font-medium text-[#1E1252] mb-2">Resultado:</p>
           <p class="text-xs text-[#0F6E56]">✓ Creados: {{ cargaResultado.creados }}</p>
           <p class="text-xs text-[#9B89D4]">— Omitidos: {{ cargaResultado.omitidos }}</p>
           <p class="text-xs text-red-500" v-if="cargaResultado.errores > 0">
             ✗ Errores: {{ cargaResultado.errores }}
           </p>
         </div>
-
         <div class="border-2 border-dashed border-[#ece9f8] rounded-xl p-6 text-center mb-4">
           <input
             type="file"
@@ -367,7 +385,6 @@
             Seleccionar archivo
           </button>
         </div>
-
         <div class="flex gap-3">
           <button
             @click="cerrarCargaModal"
@@ -392,11 +409,15 @@
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
+import { useGradosGrupos } from '@/composables/useGradosGrupos'
+
+const { grados, gruposPorGrado } = useGradosGrupos()
 
 const alumnos = ref([])
 const loading = ref(false)
 const buscar = ref('')
 const filtroGrado = ref('')
+const filtroGrupo = ref('')
 const filtroPago = ref('')
 const showModal = ref(false)
 const showEditModal = ref(false)
@@ -429,11 +450,6 @@ async function cargarAlumnos() {
   }
 }
 
-const grados = computed(() => {
-  const set = new Set(alumnos.value.map((a) => a.grado).filter(Boolean))
-  return [...set].sort()
-})
-
 const alumnosFiltrados = computed(() => {
   return alumnos.value.filter((a) => {
     const matchBuscar =
@@ -441,8 +457,9 @@ const alumnosFiltrados = computed(() => {
       a.nombre.toLowerCase().includes(buscar.value.toLowerCase()) ||
       a.curp.toLowerCase().includes(buscar.value.toLowerCase())
     const matchGrado = !filtroGrado.value || a.grado === filtroGrado.value
+    const matchGrupo = !filtroGrupo.value || a.grupo === filtroGrupo.value
     const matchPago = filtroPago.value === '' || a.pagado == filtroPago.value
-    return matchBuscar && matchGrado && matchPago
+    return matchBuscar && matchGrado && matchGrupo && matchPago
   })
 })
 
@@ -531,7 +548,8 @@ async function togglePago(a) {
 
 function verQR(a) {
   alumnoQR.value = a
-  qrUrl.value = `http://localhost/vincula-api/public/api/qr/alumno/${a.uuid}`
+  const token = localStorage.getItem('token')
+  qrUrl.value = `http://localhost/vincula-api/public/api/qr/alumno/${a.uuid}?token=${token}`
   showQrModal.value = true
 }
 

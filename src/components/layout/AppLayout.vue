@@ -46,18 +46,20 @@
           >
             <span class="text-base w-4 text-center">{{ item.icon }}</span>
             {{ item.label }}
-            <span v-if="isActive(item.to)" class="ml-auto w-1.5 h-1.5 rounded-full bg-[#6B4FBB]">
-            </span>
+            <span
+              v-if="isActive(item.to)"
+              class="ml-auto w-1.5 h-1.5 rounded-full bg-[#6B4FBB]"
+            ></span>
           </RouterLink>
         </template>
       </nav>
 
-      <!-- Usuario -->
+      <!-- Usuario sidebar -->
       <div :class="isDark ? 'border-[#2a2a3a]' : 'border-[#ece9f8]'" class="p-3 border-t">
         <div
           class="flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer"
           :class="isDark ? 'hover:bg-[#23233a]' : 'hover:bg-[#F4F2FB]'"
-          @click="handleLogout"
+          @click="router.push('/perfil')"
         >
           <div
             class="w-8 h-8 rounded-full bg-[#6B4FBB] flex items-center justify-center text-white text-xs font-medium flex-shrink-0"
@@ -71,9 +73,9 @@
             >
               {{ auth.nombre }}
             </p>
-            <p class="text-[10px] text-[#9B89D4] truncate">{{ auth.rol }}</p>
+            <p class="text-[10px] text-[#9B89D4] truncate capitalize">{{ auth.rol }}</p>
           </div>
-          <span class="text-[#C4B8F0] text-xs">↩</span>
+          <span class="text-[#C4B8F0] text-xs">→</span>
         </div>
       </div>
     </aside>
@@ -110,34 +112,84 @@
             <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#6B4FBB]"></span>
           </button>
 
-          <!-- Modo oscuro -->
-          <button
-            @click="isDark = !isDark"
-            class="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition"
-            :class="
-              isDark
-                ? 'border border-[#2a2a3a] text-[#6666aa] hover:bg-[#23233a]'
-                : 'border border-[#ece9f8] text-[#9B89D4] hover:bg-[#F4F2FB]'
-            "
-          >
-            {{ isDark ? '☀️' : '🌙' }}
-          </button>
-
-          <!-- Usuario -->
-          <div
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs cursor-pointer transition"
-            :class="
-              isDark
-                ? 'border-[#2a2a3a] text-[#e0e0f0] hover:bg-[#23233a]'
-                : 'border-[#ece9f8] text-[#1E1252] hover:bg-[#F4F2FB]'
-            "
-          >
+          <!-- Usuario topbar con dropdown -->
+          <div class="relative" ref="userMenuRef">
             <div
-              class="w-5 h-5 rounded-full bg-[#6B4FBB] flex items-center justify-center text-white text-[9px] font-medium"
+              @click="showUserMenu = !showUserMenu"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs cursor-pointer transition"
+              :class="
+                isDark
+                  ? 'border-[#2a2a3a] text-[#e0e0f0] hover:bg-[#23233a]'
+                  : 'border-[#ece9f8] text-[#1E1252] hover:bg-[#F4F2FB]'
+              "
             >
-              {{ iniciales }}
+              <div
+                class="w-5 h-5 rounded-full bg-[#6B4FBB] flex items-center justify-center text-white text-[9px] font-medium"
+              >
+                {{ iniciales }}
+              </div>
+              {{ auth.nombre }}
+              <span class="text-[#C4B8F0] text-[10px]">▾</span>
             </div>
-            {{ auth.nombre }}
+
+            <!-- Dropdown -->
+            <div
+              v-if="showUserMenu"
+              class="absolute right-0 top-10 w-48 rounded-xl border overflow-hidden z-50"
+              :class="isDark ? 'bg-[#18182a] border-[#2a2a3a]' : 'bg-white border-[#ece9f8]'"
+              style="box-shadow: 0 4px 24px rgba(107, 79, 187, 0.08)"
+            >
+              <!-- Info -->
+              <div
+                class="px-4 py-3 border-b"
+                :class="isDark ? 'border-[#2a2a3a]' : 'border-[#ece9f8]'"
+              >
+                <p
+                  class="text-xs font-medium"
+                  :class="isDark ? 'text-[#e0e0f0]' : 'text-[#1E1252]'"
+                >
+                  {{ auth.nombre }}
+                </p>
+                <p class="text-[10px] text-[#9B89D4] capitalize">{{ auth.rol }}</p>
+              </div>
+
+              <!-- Mi perfil -->
+              <button
+                @click="irPerfil"
+                class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs transition text-left"
+                :class="
+                  isDark
+                    ? 'text-[#8888aa] hover:bg-[#23233a] hover:text-[#A89EE8]'
+                    : 'text-[#6B7280] hover:bg-[#F4F2FB] hover:text-[#6B4FBB]'
+                "
+              >
+                <span>👤</span> Mi perfil
+              </button>
+
+              <!-- Modo oscuro -->
+              <button
+                @click="isDark = !isDark"
+                class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs transition text-left"
+                :class="
+                  isDark
+                    ? 'text-[#8888aa] hover:bg-[#23233a] hover:text-[#A89EE8]'
+                    : 'text-[#6B7280] hover:bg-[#F4F2FB] hover:text-[#6B4FBB]'
+                "
+              >
+                <span>{{ isDark ? '☀️' : '🌙' }}</span>
+                {{ isDark ? 'Modo claro' : 'Modo oscuro' }}
+              </button>
+
+              <div class="border-t" :class="isDark ? 'border-[#2a2a3a]' : 'border-[#ece9f8]'"></div>
+
+              <!-- Cerrar sesión -->
+              <button
+                @click="handleLogout"
+                class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs transition text-left text-red-400 hover:bg-red-50"
+              >
+                <span>↩</span> Cerrar sesión
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -158,32 +210,35 @@
       <main class="flex-1 overflow-y-auto p-6">
         <RouterView />
       </main>
+      <!-- Modal cambiar contraseña obligatorio -->
+      <ModalCambiarPassword v-if="!auth.passwordChanged" @completado="() => {}" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import ModalCambiarPassword from '@/components/ModalCambiarPassword.vue'
 
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const isDark = ref(localStorage.getItem('darkMode') === 'true')
+const showUserMenu = ref(false)
+const userMenuRef = ref(null)
 
-// Persistir modo oscuro
-import { watch } from 'vue'
 watch(isDark, (val) => localStorage.setItem('darkMode', val))
 
-const iniciales = computed(() => {
-  return auth.nombre
+const iniciales = computed(() =>
+  auth.nombre
     .split(' ')
     .slice(0, 2)
     .map((n) => n[0])
     .join('')
-    .toUpperCase()
-})
+    .toUpperCase(),
+)
 
 const currentRoute = computed(() => route.name || 'Inicio')
 
@@ -191,12 +246,26 @@ function isActive(path) {
   return route.path === path
 }
 
+function irPerfil() {
+  showUserMenu.value = false
+  router.push('/perfil')
+}
+
 async function handleLogout() {
+  showUserMenu.value = false
   auth.logout()
   router.push({ name: 'login' })
 }
 
-// Menú por rol
+function handleClickOutside(e) {
+  if (userMenuRef.value && !userMenuRef.value.contains(e.target)) {
+    showUserMenu.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', handleClickOutside))
+onUnmounted(() => document.removeEventListener('click', handleClickOutside))
+
 const menu = [
   {
     label: 'General',
@@ -276,6 +345,12 @@ const menu = [
         roles: ['super_admin', 'admin', 'director'],
       },
       { to: '/qr', icon: '▣', label: 'Generar QR', roles: ['super_admin', 'admin', 'director'] },
+      {
+        to: '/grados-grupos',
+        icon: '⚙',
+        label: 'Grados y grupos',
+        roles: ['super_admin', 'admin', 'director'],
+      },
     ],
   },
   {

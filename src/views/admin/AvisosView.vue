@@ -66,7 +66,6 @@
         class="bg-white rounded-2xl border overflow-hidden transition"
         :class="esVigente(a) ? 'border-[#ece9f8]' : 'border-[#F4F2FB] opacity-60'"
       >
-        <!-- Header -->
         <div class="px-5 py-4 border-b border-[#F4F2FB]">
           <div class="flex items-start justify-between gap-3">
             <div class="flex-1 min-w-0">
@@ -78,14 +77,12 @@
               </div>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
-              <!-- Badge destino -->
               <span
                 class="text-xs px-2.5 py-1 rounded-full font-medium"
                 :class="a.grado ? 'bg-[#EEEDFE] text-[#534AB7]' : 'bg-[#E1F5EE] text-[#0F6E56]'"
               >
                 {{ a.grado ? `${a.grado}${a.grupo ? ' — ' + a.grupo : ''}` : 'Toda la escuela' }}
               </span>
-              <!-- Badge vigencia -->
               <span
                 class="text-xs px-2.5 py-1 rounded-full font-medium"
                 :class="
@@ -98,7 +95,6 @@
           </div>
         </div>
 
-        <!-- Descripción -->
         <div class="px-5 py-4">
           <p class="text-sm text-[#6B7280] line-clamp-3">{{ a.descripcion }}</p>
           <div v-if="a.vigencia" class="mt-3 flex items-center gap-1.5">
@@ -107,8 +103,7 @@
           </div>
         </div>
 
-        <!-- Acciones -->
-        <div class="px-5 py-3 border-t border-[#F4F2FB] flex items-center justify-end gap-2">
+        <div class="px-5 py-3 border-t border-[#F4F2FB] flex items-center justify-end">
           <button
             @click="eliminarAviso(a)"
             class="text-xs px-3 py-1.5 rounded-lg border border-[#ece9f8] text-red-400 hover:bg-red-50 transition"
@@ -171,6 +166,7 @@
               </label>
               <select
                 v-model="form.grado"
+                @change="form.grupo = ''"
                 class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
               >
                 <option value="">Toda la escuela</option>
@@ -181,13 +177,16 @@
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">
                 Grupo <span class="text-[#C4B8F0]">(opcional)</span>
               </label>
-              <input
+              <select
                 v-model="form.grupo"
-                type="text"
-                placeholder="A, B, C..."
                 :disabled="!form.grado"
-                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] placeholder-[#C4B8F0] focus:outline-none focus:border-[#6B4FBB] transition disabled:opacity-50 disabled:cursor-not-allowed"
-              />
+                class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">Todos los grupos</option>
+                <option v-for="g in gruposPorGrado(form.grado)" :key="g.grupo" :value="g.grupo">
+                  {{ g.grupo }} — {{ g.turno }}
+                </option>
+              </select>
             </div>
           </div>
 
@@ -203,7 +202,6 @@
             <p class="text-xs text-[#C4B8F0] mt-1">Si no pones fecha, el aviso no expira.</p>
           </div>
 
-          <!-- Preview destino -->
           <div class="px-3 py-2 bg-[#F4F2FB] rounded-xl">
             <p class="text-xs text-[#9B89D4]">
               Este aviso llegará a:
@@ -242,6 +240,9 @@
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
+import { useGradosGrupos } from '@/composables/useGradosGrupos'
+
+const { grados, gruposPorGrado } = useGradosGrupos()
 
 const avisos = ref([])
 const loading = ref(false)
@@ -252,13 +253,7 @@ const showModal = ref(false)
 const guardando = ref(false)
 const formError = ref(null)
 
-const form = ref({
-  titulo: '',
-  descripcion: '',
-  grado: '',
-  grupo: '',
-  vigencia: '',
-})
+const form = ref({ titulo: '', descripcion: '', grado: '', grupo: '', vigencia: '' })
 
 onMounted(() => cargarAvisos())
 
@@ -273,11 +268,6 @@ async function cargarAvisos() {
   }
 }
 
-const grados = computed(() => {
-  const set = new Set(avisos.value.map((a) => a.grado).filter(Boolean))
-  return [...set].sort()
-})
-
 const avisosVigentes = computed(() => avisos.value.filter((a) => esVigente(a)).length)
 
 const avisosFiltrados = computed(() => {
@@ -286,14 +276,11 @@ const avisosFiltrados = computed(() => {
       !buscar.value ||
       a.titulo.toLowerCase().includes(buscar.value.toLowerCase()) ||
       a.descripcion.toLowerCase().includes(buscar.value.toLowerCase())
-
     const matchGrado =
       !filtroGrado.value ||
       (filtroGrado.value === 'general' ? !a.grado : a.grado === filtroGrado.value)
-
     const matchEstado =
       !filtroEstado.value || (filtroEstado.value === 'vigente' ? esVigente(a) : !esVigente(a))
-
     return matchBuscar && matchGrado && matchEstado
   })
 })
@@ -305,12 +292,10 @@ function esVigente(a) {
 
 async function publicar() {
   formError.value = null
-
   if (!form.value.titulo || !form.value.descripcion) {
     formError.value = 'El título y la descripción son obligatorios.'
     return
   }
-
   guardando.value = true
   try {
     await api.post('/aviso/publicar', {
@@ -320,7 +305,6 @@ async function publicar() {
       grupo: form.value.grupo || null,
       vigencia: form.value.vigencia || null,
     })
-
     cerrarModal()
     await cargarAvisos()
     swal.fire({
@@ -339,13 +323,12 @@ async function publicar() {
 async function eliminarAviso(a) {
   const result = await swal.fire({
     title: '¿Eliminar aviso?',
-    text: `"${a.titulo}" dejará de ser visible para los padres.`,
+    text: `"${a.titulo}" dejará de ser visible.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Sí, eliminar',
   })
   if (!result.isConfirmed) return
-
   try {
     await api.delete(`/aviso/eliminar/${a.id}`)
     await cargarAvisos()

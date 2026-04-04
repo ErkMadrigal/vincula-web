@@ -65,6 +65,12 @@ const router = createRouter({
           name: 'historial-asistencias',
           component: () => import('@/views/admin/HistorialAsistenciasView.vue'),
         },
+        {
+          path: 'grados-grupos',
+          name: 'grados-grupos',
+          component: () => import('@/views/admin/GradosGruposView.vue'),
+        },
+        { path: 'perfil', name: 'perfil', component: () => import('@/views/admin/PerfilView.vue') },
       ],
     },
 
