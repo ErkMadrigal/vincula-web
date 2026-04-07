@@ -175,9 +175,8 @@ async function cambiar() {
     })
 
     // Actualizar en el store y localStorage
-    const usuario = { ...auth.usuario, password_changed: true }
-    auth.usuario = usuario
-    localStorage.setItem('usuario', JSON.stringify(usuario))
+
+    auth.actualizarPasswordChanged()
 
     emit('completado')
   } catch (e) {

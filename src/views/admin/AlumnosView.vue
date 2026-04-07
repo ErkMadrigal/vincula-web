@@ -475,15 +475,31 @@ async function crearAlumno() {
   }
   guardando.value = true
   try {
-    await api.post('/admin/alumno/nuevo', form.value)
+    const { data } = await api.post('/admin/alumno/nuevo', form.value)
     cerrarModal()
     await cargarAlumnos()
     swal.fire({
       title: '¡Alumno creado!',
-      html: `<strong>${form.value.nombre}</strong> fue registrado correctamente.<br>
-             <span style="color:#9B89D4;font-size:13px;">Acceso app: ${form.value.curp.substring(0, 8)}</span>`,
+      html: `
+        <p style="color:#6B7280;font-size:14px;margin-bottom:16px">
+          El acceso para la app móvil es:
+        </p>
+        <div style="background:#F8F7FC;border-radius:12px;padding:16px;text-align:left">
+          <p style="margin:0 0 8px;font-size:13px;color:#9B89D4">CURP (usuario)</p>
+          <p style="margin:0 0 16px;font-size:15px;font-weight:600;color:#1E1252;font-family:monospace">
+            ${data.acceso.curp}
+          </p>
+          <p style="margin:0 0 8px;font-size:13px;color:#9B89D4">Contraseña inicial</p>
+          <p style="margin:0;font-size:15px;font-weight:600;color:#6B4FBB;font-family:monospace">
+            ${data.acceso.password}
+          </p>
+        </div>
+        <p style="color:#C4B8F0;font-size:12px;margin-top:12px">
+          El padre deberá cambiar su contraseña al primer inicio de sesión
+        </p>
+      `,
       icon: 'success',
-      confirmButtonText: 'Cerrar',
+      confirmButtonText: 'Entendido',
     })
   } catch (e) {
     formError.value = e.response?.data?.messages?.error || 'Error al crear alumno.'
