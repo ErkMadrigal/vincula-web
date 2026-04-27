@@ -1,13 +1,14 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost/vincula-api/public/api',
+  // baseURL: 'http://localhost/vincula-api/public/api',
+  baseURL: 'https://api.vincula365.com/api/',
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 })
 
-api.interceptors.request.use(config => {
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -16,15 +17,15 @@ api.interceptors.request.use(config => {
 })
 
 api.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('usuario')
       window.location.href = '/login'
     }
     return Promise.reject(error)
-  }
+  },
 )
 
 export default api

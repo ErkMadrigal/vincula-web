@@ -195,7 +195,7 @@
             <td class="px-5 py-3">
               <a
                 v-if="i.foto"
-                :href="`http://localhost/vincula-api/public/${i.foto}`"
+                :href="`https://api.vincula365.com/api/${i.foto}`"
                 target="_blank"
                 class="text-xs text-[#6B4FBB] hover:underline"
               >

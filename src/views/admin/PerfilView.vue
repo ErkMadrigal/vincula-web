@@ -18,7 +18,7 @@
             >
               <img
                 v-if="fotoPreview || usuario.foto"
-                :src="fotoPreview || `http://localhost/vincula-api/public/${usuario.foto}`"
+                :src="fotoPreview || `https://api.vincula365.com/api/${usuario.foto}`"
                 class="w-full h-full object-cover"
               />
               <span v-else class="text-2xl font-medium text-[#6B4FBB]">{{ iniciales }}</span>

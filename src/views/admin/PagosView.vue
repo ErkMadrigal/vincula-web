@@ -307,7 +307,8 @@ async function togglePago(a) {
 async function exportar(estado) {
   try {
     const token = localStorage.getItem('token')
-    const url = `http://localhost/vincula-api/public/api/admin/pagos/exportar?estado=${estado}`
+    // const url = `http://localhost/vincula-api/public/api/admin/pagos/exportar?estado=${estado}`
+    const url = `https://api.vincula365.com/api/admin/pagos/exportar?estado=${estado}`
     const resp = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     })

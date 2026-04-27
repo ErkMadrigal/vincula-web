@@ -150,7 +150,8 @@ const qrsVisibles = ref([])
 const qrAmpliado = ref(null)
 const descargandoZip = ref(false)
 
-const BASE_URL = 'http://localhost/vincula-api/public/api'
+// const BASE_URL = 'http://localhost/vincula-api/public/api'
+const BASE_URL = 'https://api.vincula365.com/api/'
 
 onMounted(() => cargarAlumnos())
 

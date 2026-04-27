@@ -565,7 +565,8 @@ async function togglePago(a) {
 function verQR(a) {
   alumnoQR.value = a
   const token = localStorage.getItem('token')
-  qrUrl.value = `http://localhost/vincula-api/public/api/qr/alumno/${a.uuid}?token=${token}`
+  // qrUrl.value = `http://localhost/vincula-api/public/api/qr/alumno/${a.uuid}?token=${token}`
+  qrUrl.value = `https://api.vincula365.com/api/qr/alumno/${a.uuid}?token=${token}`
   showQrModal.value = true
 }
 
