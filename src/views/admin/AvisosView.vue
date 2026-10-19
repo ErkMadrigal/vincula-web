@@ -239,6 +239,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
+import { textoPush } from '@/utils/push'
 import swal from '@/plugins/swal'
 import { useGradosGrupos } from '@/composables/useGradosGrupos'
 
@@ -298,7 +299,7 @@ async function publicar() {
   }
   guardando.value = true
   try {
-    await api.post('/aviso/publicar', {
+    const { data } = await api.post('/aviso/publicar', {
       titulo: form.value.titulo,
       descripcion: form.value.descripcion,
       grado: form.value.grado || null,
@@ -309,7 +310,7 @@ async function publicar() {
     await cargarAvisos()
     swal.fire({
       title: '¡Aviso publicado!',
-      text: 'Los padres de familia recibirán una notificación.',
+      text: textoPush(data.push) || 'Aviso publicado.',
       icon: 'success',
       confirmButtonText: 'Cerrar',
     })

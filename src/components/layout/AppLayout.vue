@@ -107,7 +107,27 @@
           ☰
         </button>
 
+        <!-- Selector de escuela (admin / super admin) -->
+        <div v-if="auth.multiEscuela && auth.escuelas.length" class="flex-1 min-w-0 max-w-xs">
+          <select
+            :value="auth.escuelaActivaId"
+            @change="auth.setEscuela($event.target.value)"
+            class="w-full truncate px-3 py-2 rounded-xl border text-xs font-medium focus:outline-none transition"
+            :class="
+              isDark
+                ? 'bg-[#23233a] border-[#2a2a3a] text-[#e0e0f0]'
+                : 'bg-[#F4F2FB] border-[#ece9f8] text-[#1E1252]'
+            "
+            title="Escuela activa"
+          >
+            <option v-for="e in auth.escuelas" :key="e.id" :value="e.id">
+              🏫 {{ e.nombre }}{{ e.activa == 0 ? ' (inactiva)' : '' }}
+            </option>
+          </select>
+        </div>
+
         <div
+          v-else
           class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs cursor-pointer transition"
           :class="
             isDark
@@ -228,7 +248,15 @@
 
       <!-- Contenido -->
       <main class="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6">
-        <RouterView />
+        <div
+          v-if="auth.rol === 'admin' && escuelasCargadas && !auth.escuelas.length && route.name !== 'mis-escuelas'"
+          class="mb-4 p-4 rounded-2xl border border-[#F0B429] bg-[#FFF8E6] text-sm text-[#9A6700]"
+        >
+          Todavía no tienes escuelas asignadas.
+          <RouterLink to="/mis-escuelas" class="underline font-medium">Crea una escuela</RouterLink>
+          o pide al super admin que te asigne una.
+        </div>
+        <RouterView :key="auth.escuelaActivaId || 'sin-escuela'" />
       </main>
       <!-- Modal cambiar contraseña obligatorio -->
       <ModalCambiarPassword v-if="!auth.passwordChanged" @completado="() => {}" />
@@ -248,6 +276,7 @@ const router = useRouter()
 const isDark = ref(localStorage.getItem('darkMode') === 'true')
 const showUserMenu = ref(false)
 const menuAbierto = ref(false) // menú lateral en celular
+const escuelasCargadas = ref(false)
 const userMenuRef = ref(null)
 
 watch(isDark, (val) => localStorage.setItem('darkMode', val))
@@ -290,7 +319,11 @@ function handleClickOutside(e) {
   }
 }
 
-onMounted(() => document.addEventListener('click', handleClickOutside))
+onMounted(async () => {
+  document.addEventListener('click', handleClickOutside)
+  await auth.cargarEscuelas()
+  escuelasCargadas.value = true
+})
 onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 const menu = [
@@ -364,7 +397,8 @@ const menu = [
     label: 'Admin',
     roles: ['super_admin', 'admin', 'director'],
     items: [
-      { to: '/pagos', icon: '💲', label: 'Pagos', roles: ['super_admin', 'admin', 'director'] },
+      { to: '/mis-escuelas', icon: '🏫', label: 'Mis escuelas', roles: ['admin'] },
+      { to: '/pagos', icon: '💲', label: 'Pagos', roles: ['super_admin'] },
       {
         to: '/carga',
         icon: '⬆',
@@ -386,6 +420,7 @@ const menu = [
     items: [
       { to: '/superadmin', icon: '👑', label: 'Mi dashboard', roles: ['super_admin'] },
       { to: '/escuelas', icon: '🏫', label: 'Escuelas', roles: ['super_admin'] },
+      { to: '/administradores', icon: '🛡', label: 'Administradores', roles: ['super_admin'] },
     ],
   },
 ]

@@ -8,13 +8,13 @@ export function useGradosGrupos() {
   onMounted(async () => {
     try {
       const { data } = await api.get('/admin/grados-grupos')
-      gradosGrupos.value = data.grados_grupos
-      grados.value = [...new Set(data.grados_grupos.map((g) => g.grado))].sort()
+      gradosGrupos.value = Array.isArray(data?.grados_grupos) ? data.grados_grupos : []
+      grados.value = [...new Set(gradosGrupos.value.map((g) => g.grado))].sort()
     } catch {}
   })
 
   function gruposPorGrado(grado) {
-    return gradosGrupos.value
+    return (gradosGrupos.value || [])
       .filter((g) => g.grado === grado)
       .map((g) => ({ grupo: g.grupo, turno: g.turno }))
   }

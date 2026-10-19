@@ -210,7 +210,7 @@
       </div>
 
       <!-- Pagos -->
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6">
+      <div v-if="esSuper" class="bg-white rounded-2xl border border-[#ece9f8] p-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-xl bg-[#E1F5EE] flex items-center justify-center text-lg">
             💲
@@ -271,10 +271,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
 import ActualizacionAlumnos from '@/components/ActualizacionAlumnos.vue'
+
+// Pagos y precios: solo el super admin
+const esSuper = computed(() => useAuthStore().rol === 'super_admin')
 
 const archivos = ref({ alumnos: null, maestros: null, calificaciones: null, pagos: null })
 const cargando = ref({ alumnos: false, maestros: false, calificaciones: false, pagos: false })

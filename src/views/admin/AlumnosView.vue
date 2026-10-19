@@ -27,19 +27,19 @@
         <p class="text-xs text-[#9B89D4] mb-1">Total alumnos</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ alumnos.length }}</p>
       </div>
-      <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
+      <div v-if="esSuper" class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Al corriente</p>
         <p class="text-2xl font-medium text-[#1E1252]">
           {{ alumnos.filter((a) => a.pagado == 1).length }}
         </p>
       </div>
-      <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
+      <div v-if="esSuper" class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Pendientes de pago</p>
         <p class="text-2xl font-medium text-[#1E1252]">
           {{ alumnos.filter((a) => a.pagado == 0).length }}
         </p>
       </div>
-      <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
+      <div v-if="esSuper" class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Ingreso mensual</p>
         <p class="text-2xl font-medium text-[#1E1252]">
           ${{ formatMoney(alumnos.filter((a) => a.pagado == 1).length * 15) }}
@@ -74,6 +74,7 @@
           </option>
         </select>
         <select
+          v-if="esSuper"
           v-model="filtroPago"
           class="px-3 py-2 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
         >
@@ -92,7 +93,7 @@
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">CURP</th>
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Grado</th>
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Grupo</th>
-            <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Pago</th>
+            <th v-if="esSuper" class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Pago</th>
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Acciones</th>
           </tr>
         </thead>
@@ -115,7 +116,7 @@
             <td class="px-5 py-3 text-sm text-[#6B7280] font-mono">{{ a.curp }}</td>
             <td class="px-5 py-3 text-sm text-[#6B7280]">{{ a.grado || '—' }}</td>
             <td class="px-5 py-3 text-sm text-[#6B7280]">{{ a.grupo || '—' }}</td>
-            <td class="px-5 py-3">
+            <td v-if="esSuper" class="px-5 py-3">
               <span
                 class="text-xs px-2.5 py-1 rounded-full font-medium"
                 :class="
@@ -134,6 +135,7 @@
                   Editar
                 </button>
                 <button
+                  v-if="esSuper"
                   @click="togglePago(a)"
                   class="text-xs px-3 py-1.5 rounded-lg border border-[#ece9f8] transition"
                   :class="
@@ -154,7 +156,7 @@
             </td>
           </tr>
           <tr v-if="alumnosFiltrados.length === 0">
-            <td colspan="6" class="px-5 py-8 text-center text-sm text-[#9B89D4]">
+            <td :colspan="esSuper ? 6 : 5" class="px-5 py-8 text-center text-sm text-[#9B89D4]">
               No se encontraron alumnos.
             </td>
           </tr>
@@ -439,9 +441,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
 import swal from '@/plugins/swal'
 import { useGradosGrupos } from '@/composables/useGradosGrupos'
 import * as XLSX from 'xlsx'
+
+// Pagos y precios: solo el super admin
+const esSuper = computed(() => useAuthStore().rol === 'super_admin')
 
 const { grados, gruposPorGrado } = useGradosGrupos()
 

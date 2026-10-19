@@ -5,6 +5,9 @@
       <p class="text-sm text-[#9B89D4] mt-0.5">{{ fechaHoy }}</p>
     </div>
 
+    <!-- Estado de notificaciones (por qué no le llega a alguien) -->
+    <EstadoNotificaciones v-if="puedeVerPush" />
+
     <!-- Métricas del día -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
       <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
@@ -26,7 +29,7 @@
           </span>
         </div>
       </div>
-      <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
+      <div v-if="esSuper" class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Al corriente</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ metricas.pagados }}</p>
         <p class="text-xs text-[#C4B8F0] mt-1">{{ metricas.bloqueados }} bloqueados</p>
@@ -43,7 +46,7 @@
         <p class="text-xs text-[#9B89D4] mb-1">Avisos vigentes</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ metricas.avisos }}</p>
       </div>
-      <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
+      <div v-if="esSuper" class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Ingreso mensual</p>
         <p class="text-2xl font-medium text-[#1E1252]">${{ formatMoney(metricas.pagados * 15) }}</p>
       </div>
@@ -171,8 +174,8 @@
         </div>
       </div>
 
-      <!-- Alumnos sin pago -->
-      <div class="bg-white rounded-2xl border border-[#ece9f8] overflow-hidden">
+      <!-- Alumnos sin pago (solo super admin) -->
+      <div v-if="esSuper" class="bg-white rounded-2xl border border-[#ece9f8] overflow-hidden">
         <div class="px-5 py-4 border-b border-[#F4F2FB] flex items-center justify-between">
           <p class="text-sm font-medium text-[#1E1252]">Alumnos pendientes de pago</p>
           <RouterLink to="/pagos" class="text-xs text-[#6B4FBB] hover:underline"
@@ -213,6 +216,8 @@ import { fechaISO, TZ_MX } from '@/utils/fecha'
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import api from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
+import EstadoNotificaciones from '@/components/EstadoNotificaciones.vue'
 
 const metricas = ref({
   entradas: 0,
@@ -234,6 +239,11 @@ const loadingIncidencias = ref(false)
 const loadingAvisos = ref(false)
 const loadingPagos = ref(false)
 
+// Pagos y precios: solo el super admin
+const esSuper = computed(() => useAuthStore().rol === 'super_admin')
+const puedeVerPush = computed(() => ['super_admin', 'admin', 'director'].includes(useAuthStore().rol))
+
+
 const fechaHoy = new Date().toLocaleDateString('es-MX', {
   timeZone: TZ_MX,
   weekday: 'long',
@@ -249,7 +259,7 @@ const avisosVigentes = computed(() =>
 const alumnosSinPago = computed(() => alumnos.value.filter((a) => a.pagado == 0))
 
 onMounted(async () => {
-  await Promise.all([cargarAsistencias(), cargarIncidencias(), cargarAvisos(), cargarPagos()])
+  await Promise.all([cargarAsistencias(), cargarIncidencias(), cargarAvisos(), esSuper.value ? cargarPagos() : null])
 })
 
 async function cargarAsistencias() {

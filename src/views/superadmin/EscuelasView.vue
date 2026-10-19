@@ -49,6 +49,7 @@
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Pagados</th>
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Ingreso/mes</th>
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Plan</th>
+            <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]" title="Si está apagado, la asistencia no revisa pagos">Cobro</th>
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Estado</th>
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Acciones</th>
           </tr>
@@ -79,6 +80,19 @@
               </span>
             </td>
             <td class="px-5 py-3">
+              <button
+                @click="toggleCobro(e)"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition"
+                :class="e.cobro_activo == 1 ? 'bg-[#1D9E75]' : 'bg-[#E5E1F5]'"
+                :title="e.cobro_activo == 1 ? 'Cobro activo: se bloquea a alumnos sin pago' : 'Sin cobro: todos registran asistencia'"
+              >
+                <span
+                  class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition"
+                  :class="e.cobro_activo == 1 ? 'translate-x-5' : 'translate-x-0.5'"
+                ></span>
+              </button>
+            </td>
+            <td class="px-5 py-3">
               <span
                 class="text-xs px-2.5 py-1 rounded-full font-medium"
                 :class="
@@ -103,7 +117,7 @@
             </td>
           </tr>
           <tr v-if="escuelasFiltradas.length === 0">
-            <td colspan="7" class="px-5 py-8 text-center text-sm text-[#9B89D4]">
+            <td colspan="8" class="px-5 py-8 text-center text-sm text-[#9B89D4]">
               No se encontraron escuelas.
             </td>
           </tr>
@@ -281,6 +295,27 @@ async function crearEscuela() {
     formError.value = e.response?.data?.messages?.error || 'Error al crear escuela.'
   } finally {
     guardando.value = false
+  }
+}
+
+async function toggleCobro(e) {
+  const activar = e.cobro_activo != 1
+  const { isConfirmed } = await swal.fire({
+    title: activar ? '¿Activar cobro?' : '¿Desactivar cobro?',
+    text: activar
+      ? `En ${e.nombre} los alumnos sin pago ya NO podrán registrar asistencia.`
+      : `En ${e.nombre} todos los alumnos podrán registrar asistencia sin revisar pagos.`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: activar ? 'Activar' : 'Desactivar',
+    cancelButtonText: 'Cancelar',
+  })
+  if (!isConfirmed) return
+  try {
+    const { data } = await api.put(`/superadmin/escuelas/cobro/${e.id}`)
+    e.cobro_activo = data.cobro_activo
+  } catch {
+    swal.fire({ title: 'Error', text: 'No se pudo cambiar el cobro.', icon: 'error' })
   }
 }
 

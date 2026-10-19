@@ -42,7 +42,24 @@ const router = createRouter({
           name: 'calificaciones',
           component: () => import('@/views/admin/CalificacionesView.vue'),
         },
-        { path: 'pagos', name: 'pagos', component: () => import('@/views/admin/PagosView.vue') },
+        {
+          path: 'pagos',
+          name: 'pagos',
+          component: () => import('@/views/admin/PagosView.vue'),
+          meta: { roles: ['super_admin'] }, // pagos y precios: solo super admin
+        },
+        {
+          path: 'mis-escuelas',
+          name: 'mis-escuelas',
+          component: () => import('@/views/admin/MisEscuelasView.vue'),
+          meta: { roles: ['admin', 'super_admin'] },
+        },
+        {
+          path: 'administradores',
+          name: 'administradores',
+          component: () => import('@/views/superadmin/AdministradoresView.vue'),
+          meta: { roles: ['super_admin'] },
+        },
         { path: 'carga', name: 'carga', component: () => import('@/views/admin/CargaView.vue') },
         { path: 'qr', name: 'qr', component: () => import('@/views/admin/QrView.vue') },
         {
@@ -54,11 +71,13 @@ const router = createRouter({
           path: 'superadmin',
           name: 'superadmin',
           component: () => import('@/views/superadmin/SuperAdminView.vue'),
+          meta: { roles: ['super_admin'] },
         },
         {
           path: 'escuelas',
           name: 'escuelas',
           component: () => import('@/views/superadmin/EscuelasView.vue'),
+          meta: { roles: ['super_admin'] },
         },
         {
           path: 'historial-asistencias',
@@ -96,6 +115,11 @@ router.beforeEach((to) => {
 
   if (to.meta.requiresAuth && auth.isAuthenticated && auth.rol === 'padre') {
     return { name: 'no-acceso' }
+  }
+
+  // Rutas restringidas por rol
+  if (to.meta.roles && !to.meta.roles.includes(auth.rol)) {
+    return { name: 'dashboard' }
   }
 
   if (to.meta.guest && auth.isAuthenticated && auth.rol !== 'padre') {

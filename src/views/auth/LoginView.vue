@@ -110,6 +110,7 @@ async function handleLogin() {
   loading.value = true
   try {
     await auth.login(form.value.curp, form.value.password)
+    await auth.cargarEscuelas() // admin / super admin: deja lista la escuela activa
     router.push({ name: 'dashboard' })
   } catch (e) {
     const msg = e.response?.data?.messages?.error

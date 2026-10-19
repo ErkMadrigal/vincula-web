@@ -378,6 +378,7 @@
 import { fechaISO, TZ_MX } from '@/utils/fecha'
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
+import { textoPush } from '@/utils/push'
 import swal from '@/plugins/swal'
 
 const incidencias = ref([])
@@ -530,7 +531,7 @@ async function registrarIncidencia() {
     formData.append('descripcion', form.value.descripcion)
     if (form.value.foto) formData.append('foto', form.value.foto)
 
-    await api.post('/incidencia/registrar', formData, {
+    const { data } = await api.post('/incidencia/registrar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
 
@@ -538,7 +539,7 @@ async function registrarIncidencia() {
     await cargar()
     swal.fire({
       title: '¡Incidencia registrada!',
-      text: 'Se notificó al padre de familia.',
+      text: textoPush(data.push, 'los tutores') || 'Incidencia registrada.',
       icon: 'success',
       confirmButtonText: 'Cerrar',
     })
