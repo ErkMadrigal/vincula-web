@@ -6,7 +6,7 @@
     </div>
 
     <!-- Métricas del día -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
       <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Entradas hoy</p>
         <p class="text-2xl font-medium text-[#0F6E56]">{{ metricas.entradas }}</p>
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Segunda fila métricas -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4 mb-6">
       <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Total maestros</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ metricas.maestros }}</p>
@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
       <!-- Últimas asistencias -->
       <div class="bg-white rounded-2xl border border-[#ece9f8] overflow-hidden">
         <div class="px-5 py-4 border-b border-[#F4F2FB] flex items-center justify-between">
@@ -209,6 +209,7 @@
 </template>
 
 <script setup>
+import { fechaISO, TZ_MX } from '@/utils/fecha'
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import api from '@/api/axios'
@@ -234,6 +235,7 @@ const loadingAvisos = ref(false)
 const loadingPagos = ref(false)
 
 const fechaHoy = new Date().toLocaleDateString('es-MX', {
+  timeZone: TZ_MX,
   weekday: 'long',
   day: '2-digit',
   month: 'long',
@@ -266,7 +268,7 @@ async function cargarAsistencias() {
 async function cargarIncidencias() {
   loadingIncidencias.value = true
   try {
-    const hoy = new Date().toISOString().split('T')[0]
+    const hoy = fechaISO(new Date())
     const { data } = await api.get(`/incidencia/escuela?desde=${hoy}&hasta=${hoy}`)
     incidencias.value = data.incidencias
     metricas.value.incidencias = data.incidencias.length

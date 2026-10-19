@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
         <h1 class="text-xl font-medium text-[#1E1252]">Usuarios</h1>
         <p class="text-sm text-[#9B89D4] mt-0.5">Administra directores, admins y maestros</p>
@@ -34,7 +34,7 @@
 
       <div v-if="loading" class="p-8 text-center text-sm text-[#9B89D4]">Cargando usuarios...</div>
 
-      <table v-else class="w-full">
+      <div v-else class="overflow-x-auto"><table class="w-full min-w-[640px]">
         <thead>
           <tr class="border-b border-[#F4F2FB]">
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Nombre</th>
@@ -110,7 +110,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
 
     <!-- Modal editar usuario -->
@@ -119,7 +119,7 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-4">Editar usuario</h2>
 
         <div
@@ -194,7 +194,7 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-4">Nuevo usuario</h2>
 
         <div

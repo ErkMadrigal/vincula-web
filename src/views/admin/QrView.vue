@@ -44,7 +44,7 @@
     <div v-if="loading" class="p-8 text-center text-sm text-[#9B89D4]">Cargando alumnos...</div>
 
     <!-- Grid de alumnos -->
-    <div v-else class="grid grid-cols-3 gap-4">
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         v-for="a in alumnosFiltrados"
         :key="a.uuid"
@@ -91,7 +91,7 @@
 
       <div
         v-if="alumnosFiltrados.length === 0"
-        class="col-span-3 bg-white rounded-2xl border border-[#ece9f8] p-8 text-center text-sm text-[#9B89D4]"
+        class="col-span-full bg-white rounded-2xl border border-[#ece9f8] p-8 text-center text-sm text-[#9B89D4]"
       >
         No se encontraron alumnos.
       </div>
@@ -104,7 +104,7 @@
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
       @click.self="qrAmpliado = null"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-sm text-center">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-sm text-center">
         <p class="text-sm font-medium text-[#1E1252] mb-1">{{ qrAmpliado.nombre }}</p>
         <p class="text-xs text-[#9B89D4] mb-4">
           {{ qrAmpliado.grado }} — Grupo {{ qrAmpliado.grupo }}
@@ -112,7 +112,7 @@
         <img
           :src="qrUrl(qrAmpliado.uuid)"
           :alt="qrAmpliado.nombre"
-          class="w-56 h-56 mx-auto rounded-xl border border-[#ece9f8] mb-4"
+          class="w-48 h-48 sm:w-56 sm:h-56 mx-auto rounded-xl border border-[#ece9f8] mb-4"
         />
         <p class="text-[10px] text-[#C4B8F0] font-mono mb-4">{{ qrAmpliado.uuid }}</p>
         <div class="flex gap-3">

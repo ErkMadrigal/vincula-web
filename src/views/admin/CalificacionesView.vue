@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
         <h1 class="text-xl font-medium text-[#1E1252]">Calificaciones</h1>
         <p class="text-sm text-[#9B89D4] mt-0.5">Gestiona las calificaciones por bimestre</p>
@@ -114,7 +114,7 @@
                 </div>
               </div>
               <!-- Materias -->
-              <table class="w-full">
+              <div class="overflow-x-auto"><table class="w-full min-w-[480px]">
                 <thead>
                   <tr class="border-b border-[#F4F2FB]">
                     <th class="text-left px-4 py-2 text-xs font-medium text-[#9B89D4]">Materia</th>
@@ -146,7 +146,7 @@
                     <td class="px-4 py-2 text-xs text-[#9B89D4]">{{ m.observaciones || '—' }}</td>
                   </tr>
                 </tbody>
-              </table>
+              </table></div>
             </div>
           </div>
         </div>
@@ -166,7 +166,7 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-2">Cargar calificaciones</h2>
         <p class="text-xs text-[#9B89D4] mb-4">
           Columnas requeridas: <strong>curp, materia, calificacion, observaciones</strong>

@@ -6,7 +6,10 @@
     </div>
 
     <!-- Tarjetas de módulos -->
-    <div class="grid grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+      <!-- Actualización masiva (inserta / actualiza por CURP) -->
+      <ActualizacionAlumnos class="lg:col-span-2" />
+
       <!-- Alumnos -->
       <div class="bg-white rounded-2xl border border-[#ece9f8] p-6">
         <div class="flex items-center gap-3 mb-4">
@@ -271,6 +274,7 @@
 import { ref } from 'vue'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
+import ActualizacionAlumnos from '@/components/ActualizacionAlumnos.vue'
 
 const archivos = ref({ alumnos: null, maestros: null, calificaciones: null, pagos: null })
 const cargando = ref({ alumnos: false, maestros: false, calificaciones: false, pagos: false })

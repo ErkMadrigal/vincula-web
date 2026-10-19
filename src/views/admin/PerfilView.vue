@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="bg-[#F8F7FC] rounded-xl p-4">
             <p class="text-xs text-[#9B89D4] mb-1">CURP</p>
             <p class="text-sm font-medium text-[#1E1252] font-mono">{{ usuario.curp }}</p>

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
         <h1 class="text-xl font-medium text-[#1E1252]">Pagos</h1>
         <p class="text-sm text-[#9B89D4] mt-0.5">Control de cobranza mensual</p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex flex-wrap gap-2 sm:gap-3">
         <button
           @click="showCargaModal = true"
           class="px-4 py-2 border border-[#ece9f8] text-[#6B4FBB] text-sm rounded-xl hover:bg-[#F4F2FB] transition"
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Métricas -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
       <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Total alumnos</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ totales.total }}</p>
@@ -88,7 +88,7 @@
     <!-- Tabla -->
     <div class="bg-white rounded-2xl border border-[#ece9f8] overflow-hidden">
       <div v-if="loading" class="p-8 text-center text-sm text-[#9B89D4]">Cargando...</div>
-      <table v-else class="w-full">
+      <div v-else class="overflow-x-auto"><table class="w-full min-w-[640px]">
         <thead>
           <tr class="border-b border-[#F4F2FB]">
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Alumno</th>
@@ -149,7 +149,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
 
     <!-- Modal carga xlsx -->
@@ -158,7 +158,7 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-1">Subir xlsx de pagos</h2>
         <p class="text-xs text-[#9B89D4] mb-4">
           Columnas: <strong>uuid, nombre, pagado (1=activo / 0=bloqueado), grado, grupo</strong>
@@ -236,6 +236,7 @@
 </template>
 
 <script setup>
+import { fechaISO } from '@/utils/fecha'
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
@@ -315,7 +316,7 @@ async function exportar(estado) {
     const blob = await resp.blob()
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.download = `pagos_${estado === '0' ? 'sin_pago' : estado === '1' ? 'pagados' : 'todos'}_${new Date().toISOString().split('T')[0]}.xlsx`
+    link.download = `pagos_${estado === '0' ? 'sin_pago' : estado === '1' ? 'pagados' : 'todos'}_${fechaISO(new Date())}.xlsx`
     link.click()
     URL.revokeObjectURL(link.href)
   } catch {

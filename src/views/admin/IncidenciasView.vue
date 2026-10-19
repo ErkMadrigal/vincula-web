@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
         <h1 class="text-xl font-medium text-[#1E1252]">Incidencias</h1>
         <p class="text-sm text-[#9B89D4] mt-0.5">
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Métricas -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
       <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Total período</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ incidencias.length }}</p>
@@ -74,19 +74,19 @@
           </button>
         </div>
 
-        <div class="w-px h-6 bg-[#ece9f8]"></div>
+        <div class="hidden sm:block w-px h-6 bg-[#ece9f8]"></div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <input
             v-model="desde"
             type="date"
-            class="px-3 py-1.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-xs text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
+            class="flex-1 min-w-0 sm:flex-none px-3 py-1.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-xs text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
           />
           <span class="text-xs text-[#C4B8F0]">al</span>
           <input
             v-model="hasta"
             type="date"
-            class="px-3 py-1.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-xs text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
+            class="flex-1 min-w-0 sm:flex-none px-3 py-1.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-xs text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
           />
           <button
             @click="aplicarFiltro('rango')"
@@ -96,7 +96,7 @@
           </button>
         </div>
 
-        <div class="w-px h-6 bg-[#ece9f8]"></div>
+        <div class="hidden sm:block w-px h-6 bg-[#ece9f8]"></div>
 
         <input
           v-model="buscar"
@@ -131,7 +131,7 @@
     <!-- Tabla -->
     <div class="bg-white rounded-2xl border border-[#ece9f8] overflow-hidden">
       <div v-if="loading" class="p-8 text-center text-sm text-[#9B89D4]">Cargando...</div>
-      <table v-else class="w-full">
+      <div v-else class="overflow-x-auto"><table class="w-full min-w-[640px]">
         <thead>
           <tr class="border-b border-[#F4F2FB]">
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Alumno</th>
@@ -210,7 +210,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
 
     <!-- Modal nueva incidencia -->
@@ -220,7 +220,7 @@
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
       @click.self="showSuggestions = false"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-4">Nueva incidencia</h2>
 
         <div
@@ -289,7 +289,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Tipo</label>
               <select
@@ -375,6 +375,7 @@
 </template>
 
 <script setup>
+import { fechaISO, TZ_MX } from '@/utils/fecha'
 import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
@@ -406,6 +407,7 @@ const form = ref({
 })
 
 const fechaHoy = new Date().toLocaleDateString('es-MX', {
+  timeZone: TZ_MX,
   weekday: 'long',
   day: '2-digit',
   month: 'long',
@@ -425,7 +427,7 @@ async function aplicarFiltro(periodo) {
   const hoy = new Date()
 
   if (periodo === 'hoy') {
-    const d = hoy.toISOString().split('T')[0]
+    const d = fechaISO(hoy)
     desde.value = d
     hasta.value = d
   } else if (periodo === 'semana') {
@@ -434,8 +436,8 @@ async function aplicarFiltro(periodo) {
     lunes.setDate(hoy.getDate() - dia + 1)
     const domingo = new Date(lunes)
     domingo.setDate(lunes.getDate() + 6)
-    desde.value = lunes.toISOString().split('T')[0]
-    hasta.value = domingo.toISOString().split('T')[0]
+    desde.value = fechaISO(lunes)
+    hasta.value = fechaISO(domingo)
   } else if (periodo === 'mes') {
     const y = hoy.getFullYear()
     const m = String(hoy.getMonth() + 1).padStart(2, '0')

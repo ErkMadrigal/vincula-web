@@ -1,9 +1,19 @@
 <template>
-  <div class="flex h-screen overflow-hidden" :class="isDark ? 'dark bg-[#111120]' : 'bg-[#F8F7FC]'">
-    <!-- Sidebar -->
+  <div class="flex h-[100dvh] overflow-hidden" :class="isDark ? 'dark bg-[#111120]' : 'bg-[#F8F7FC]'">
+    <!-- Fondo oscuro del menú en celular -->
+    <div
+      v-if="menuAbierto"
+      class="fixed inset-0 z-30 bg-black/40 lg:hidden"
+      @click="menuAbierto = false"
+    ></div>
+
+    <!-- Sidebar: fijo en escritorio, deslizable en celular -->
     <aside
-      :class="isDark ? 'bg-[#18182a] border-[#2a2a3a]' : 'bg-white border-[#ece9f8]'"
-      class="w-56 flex flex-col border-r transition-colors duration-300 flex-shrink-0"
+      :class="[
+        isDark ? 'bg-[#18182a] border-[#2a2a3a]' : 'bg-white border-[#ece9f8]',
+        menuAbierto ? 'translate-x-0' : '-translate-x-full',
+      ]"
+      class="w-64 lg:w-56 flex flex-col border-r transition-transform lg:transition-colors duration-300 flex-shrink-0 fixed inset-y-0 left-0 z-40 lg:static lg:translate-x-0"
     >
       <!-- Logo -->
       <div :class="isDark ? 'border-[#2a2a3a]' : 'border-[#ece9f8]'" class="px-4 py-4 border-b">
@@ -11,7 +21,7 @@
           <img
             src="@/assets/img/vincula_icon_animated_transparent.svg"
             alt="Vincúla"
-            class="w-26 h-26"
+            class="w-20 h-20 lg:w-26 lg:h-26"
           />
           <span
             class="text-2xl font-medium tracking-wide"
@@ -81,14 +91,24 @@
     </aside>
 
     <!-- Main -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 min-w-0 flex flex-col overflow-hidden">
       <!-- Topbar -->
       <header
         :class="isDark ? 'bg-[#18182a] border-[#2a2a3a]' : 'bg-white border-[#ece9f8]'"
-        class="h-14 flex items-center justify-between px-6 border-b transition-colors duration-300 flex-shrink-0"
+        class="h-14 flex items-center justify-between gap-2 px-3 lg:px-6 border-b transition-colors duration-300 flex-shrink-0"
       >
+        <!-- Botón menú (solo celular/tablet) -->
+        <button
+          class="lg:hidden w-10 h-10 -ml-1 rounded-lg flex items-center justify-center text-xl"
+          :class="isDark ? 'text-[#e0e0f0]' : 'text-[#1E1252]'"
+          aria-label="Abrir menú"
+          @click.stop="menuAbierto = true"
+        >
+          ☰
+        </button>
+
         <div
-          class="flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs cursor-pointer transition"
+          class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs cursor-pointer transition"
           :class="
             isDark
               ? 'bg-[#23233a] border-[#2a2a3a] text-[#6666aa]'
@@ -128,7 +148,7 @@
               >
                 {{ iniciales }}
               </div>
-              {{ auth.nombre }}
+              <span class="hidden sm:inline max-w-[160px] truncate">{{ auth.nombre }}</span>
               <span class="text-[#C4B8F0] text-[10px]">▾</span>
             </div>
 
@@ -196,7 +216,7 @@
 
       <!-- Breadcrumb -->
       <div
-        class="px-6 py-2 text-xs border-b transition-colors"
+        class="px-4 lg:px-6 py-2 text-xs border-b transition-colors"
         :class="
           isDark
             ? 'bg-[#18182a] border-[#2a2a3a] text-[#4a4a6a]'
@@ -207,7 +227,7 @@
       </div>
 
       <!-- Contenido -->
-      <main class="flex-1 overflow-y-auto p-6">
+      <main class="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6">
         <RouterView />
       </main>
       <!-- Modal cambiar contraseña obligatorio -->
@@ -227,9 +247,16 @@ const route = useRoute()
 const router = useRouter()
 const isDark = ref(localStorage.getItem('darkMode') === 'true')
 const showUserMenu = ref(false)
+const menuAbierto = ref(false) // menú lateral en celular
 const userMenuRef = ref(null)
 
 watch(isDark, (val) => localStorage.setItem('darkMode', val))
+
+// Al navegar, cerrar el menú en celular
+watch(
+  () => route.fullPath,
+  () => (menuAbierto.value = false),
+)
 
 const iniciales = computed(() =>
   auth.nombre

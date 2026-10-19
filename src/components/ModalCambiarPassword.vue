@@ -3,7 +3,7 @@
     style="min-height: 100vh; background: rgba(30, 18, 82, 0.6)"
     class="fixed inset-0 flex items-center justify-center z-[100] px-4"
   >
-    <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+    <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
       <!-- Header -->
       <div class="text-center mb-6">
         <div

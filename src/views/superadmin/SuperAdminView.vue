@@ -6,7 +6,7 @@
     </div>
 
     <!-- Métricas globales -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
       <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Escuelas activas</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ totales.escuelas }}</p>
@@ -30,7 +30,7 @@
     <!-- Proyección -->
     <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 mb-6">
       <p class="text-sm font-medium text-[#1E1252] mb-4">Proyección de ingresos</p>
-      <div class="grid grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="text-center p-4 bg-[#F4F2FB] rounded-xl">
           <p class="text-xs text-[#9B89D4] mb-1">Este mes</p>
           <p class="text-xl font-medium text-[#6B4FBB]">${{ formatMoney(totales.ingreso_mes) }}</p>
@@ -60,7 +60,7 @@
 
       <div v-if="loading" class="p-8 text-center text-sm text-[#9B89D4]">Cargando...</div>
 
-      <table v-else class="w-full">
+      <div v-else class="overflow-x-auto"><table class="w-full min-w-[640px]">
         <thead>
           <tr class="border-b border-[#F4F2FB]">
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Escuela</th>
@@ -120,12 +120,13 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { TZ_MX } from '@/utils/fecha'
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import api from '@/api/axios'
@@ -142,6 +143,7 @@ const totales = ref({
 })
 
 const fechaHoy = new Date().toLocaleDateString('es-MX', {
+  timeZone: TZ_MX,
   weekday: 'long',
   day: '2-digit',
   month: 'long',

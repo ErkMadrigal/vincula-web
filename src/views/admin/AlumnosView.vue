@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
         <h1 class="text-xl font-medium text-[#1E1252]">Alumnos</h1>
         <p class="text-sm text-[#9B89D4] mt-0.5">Gestiona los alumnos de la escuela</p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex flex-wrap gap-2 sm:gap-3">
         <button
           @click="showCargaModal = true"
           class="px-4 py-2 border border-[#ece9f8] text-[#6B4FBB] text-sm rounded-xl hover:bg-[#F4F2FB] transition"
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Métricas -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
       <div class="bg-white rounded-xl border border-[#ece9f8] p-4">
         <p class="text-xs text-[#9B89D4] mb-1">Total alumnos</p>
         <p class="text-2xl font-medium text-[#1E1252]">{{ alumnos.length }}</p>
@@ -85,7 +85,7 @@
 
       <div v-if="loading" class="p-8 text-center text-sm text-[#9B89D4]">Cargando alumnos...</div>
 
-      <table v-else class="w-full">
+      <div v-else class="overflow-x-auto"><table class="w-full min-w-[640px]">
         <thead>
           <tr class="border-b border-[#F4F2FB]">
             <th class="text-left px-5 py-3 text-xs font-medium text-[#9B89D4]">Nombre</th>
@@ -159,7 +159,7 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
 
     <!-- Modal nuevo alumno -->
@@ -168,7 +168,7 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-4">Nuevo alumno</h2>
         <div
           v-if="formError"
@@ -197,7 +197,7 @@
               class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] placeholder-[#C4B8F0] focus:outline-none focus:border-[#6B4FBB] transition"
             />
           </div>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Grado</label>
               <select
@@ -251,7 +251,7 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-4">Editar alumno</h2>
         <div
           v-if="editError"
@@ -268,7 +268,7 @@
               class="w-full px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] focus:outline-none focus:border-[#6B4FBB] transition"
             />
           </div>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-medium text-[#6B7280] mb-1.5">Grado</label>
               <select
@@ -319,7 +319,7 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-sm text-center">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-sm text-center">
         <h2 class="text-base font-medium text-[#1E1252] mb-1">QR — {{ alumnoQR?.nombre }}</h2>
         <p class="text-xs text-[#9B89D4] mb-4">{{ alumnoQR?.grado }} {{ alumnoQR?.grupo }}</p>
         <img
@@ -355,17 +355,48 @@
       style="min-height: 100vh; background: rgba(30, 18, 82, 0.3)"
       class="fixed inset-0 flex items-center justify-center z-50 px-4"
     >
-      <div class="bg-white rounded-2xl border border-[#ece9f8] p-6 w-full max-w-md">
+      <div class="bg-white rounded-2xl border border-[#ece9f8] p-5 sm:p-6 w-full max-h-[90dvh] overflow-y-auto max-w-md">
         <h2 class="text-base font-medium text-[#1E1252] mb-2">Carga masiva de alumnos</h2>
         <p class="text-xs text-[#9B89D4] mb-4">
           Columnas: <strong>curp, nombre, grado, grupo</strong>
         </p>
         <div v-if="cargaResultado" class="mb-4 p-4 rounded-xl bg-[#F4F2FB] border border-[#ece9f8]">
-          <p class="text-xs text-[#0F6E56]">✓ Creados: {{ cargaResultado.creados }}</p>
-          <p class="text-xs text-[#9B89D4]">— Omitidos: {{ cargaResultado.omitidos }}</p>
-          <p class="text-xs text-red-500" v-if="cargaResultado.errores > 0">
+          <p class="text-xs text-[#6B4FBB] font-medium mb-2" v-if="cargaResultado.progreso">
+            {{ cargaResultado.progreso }}
+          </p>
+          <p class="text-xs text-[#0F6E56] mb-1">✓ Creados: {{ cargaResultado.creados }}</p>
+          <p class="text-xs text-[#9B89D4] mb-1">— Omitidos: {{ cargaResultado.omitidos }}</p>
+          <p class="text-xs text-red-500 mb-2" v-if="cargaResultado.errores > 0">
             ✗ Errores: {{ cargaResultado.errores }}
           </p>
+
+          <!-- Detalle errores -->
+          <div v-if="cargaResultado.detalle_errores?.length" class="mt-2">
+            <p class="text-xs font-medium text-red-500 mb-1">Detalle de errores:</p>
+            <div class="max-h-32 overflow-y-auto">
+              <p
+                v-for="e in cargaResultado.detalle_errores"
+                :key="e"
+                class="text-xs text-red-400 font-mono mb-0.5"
+              >
+                {{ e }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Detalle omitidos -->
+          <div v-if="cargaResultado.detalle_omitidos?.length" class="mt-2">
+            <p class="text-xs font-medium text-[#9B89D4] mb-1">Omitidos (ya existían):</p>
+            <div class="max-h-32 overflow-y-auto">
+              <p
+                v-for="o in cargaResultado.detalle_omitidos"
+                :key="o"
+                class="text-xs text-[#C4B8F0] font-mono mb-0.5"
+              >
+                {{ o }}
+              </p>
+            </div>
+          </div>
         </div>
         <div class="border-2 border-dashed border-[#ece9f8] rounded-xl p-6 text-center mb-4">
           <input
@@ -410,6 +441,7 @@ import { ref, computed, onMounted } from 'vue'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
 import { useGradosGrupos } from '@/composables/useGradosGrupos'
+import * as XLSX from 'xlsx'
 
 const { grados, gruposPorGrado } = useGradosGrupos()
 
@@ -578,18 +610,66 @@ function seleccionarArchivo(e) {
 async function subirArchivo() {
   if (!archivoSeleccionado.value) return
   subiendo.value = true
+  cargaResultado.value = null
+
   try {
-    const formData = new FormData()
-    formData.append('archivo', archivoSeleccionado.value)
-    const { data } = await api.post('/admin/carga/alumnos', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-    cargaResultado.value = data
+    const buffer = await archivoSeleccionado.value.arrayBuffer()
+    const wb = XLSX.read(buffer)
+    const ws = wb.Sheets[wb.SheetNames[0]]
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })
+
+    const header = rows[0]
+    const data = rows.slice(1).filter((r) => r[0] || r[1])
+    const lotes = []
+
+    for (let i = 0; i < data.length; i += 300) {
+      lotes.push(data.slice(i, i + 300))
+    }
+
+    let totalCreados = 0
+    let totalOmitidos = 0
+    let totalErrores = 0
+    let detalleErrores = []
+    let detalleOmitidos = []
+
+    for (let idx = 0; idx < lotes.length; idx++) {
+      const wsLote = XLSX.utils.aoa_to_sheet([header, ...lotes[idx]])
+      const wbLote = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wbLote, wsLote, 'Sheet1')
+      const blob = new Blob([XLSX.write(wbLote, { bookType: 'xlsx', type: 'array' })], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      })
+
+      const formData = new FormData()
+      formData.append('archivo', blob, 'lote.xlsx')
+
+      const { data: res } = await api.post('/admin/carga/alumnos', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+
+      totalCreados += res.creados || 0
+      totalOmitidos += res.omitidos || 0
+      totalErrores += res.errores || 0
+      detalleErrores = detalleErrores.concat(res.detalle_errores || [])
+      detalleOmitidos = detalleOmitidos.concat(res.detalle_omitidos || [])
+
+      cargaResultado.value = {
+        creados: totalCreados,
+        omitidos: totalOmitidos,
+        errores: totalErrores,
+        progreso: `Lote ${idx + 1} de ${lotes.length} procesado`,
+        detalle_errores: detalleErrores,
+        detalle_omitidos: detalleOmitidos,
+      }
+    }
+
     await cargarAlumnos()
     archivoSeleccionado.value = null
     if (fileInput.value) fileInput.value.value = ''
-  } catch {
-    swal.fire({ title: 'Error', text: 'No se pudo procesar el archivo.', icon: 'error' })
+  } catch (e) {
+    const msg = e.response?.data?.messages?.error || e.message || 'Error desconocido'
+    swal.fire({ title: 'Error', text: msg, icon: 'error' })
+    console.error('Carga error:', e.response?.data)
   } finally {
     subiendo.value = false
   }

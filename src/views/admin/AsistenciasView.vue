@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="mb-6">
+    <div class="mb-4 lg:mb-6">
       <h1 class="text-xl font-medium text-[#1E1252]">Asistencias</h1>
       <p class="text-sm text-[#9B89D4] mt-0.5">Registra entradas y salidas — {{ fechaHoy }}</p>
     </div>
 
-    <div class="grid grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
       <!-- Panel de captura -->
       <div class="space-y-4">
         <!-- Selector entrada/salida -->
@@ -13,7 +13,7 @@
           <p class="text-xs font-medium text-[#6B7280] mb-3">Tipo de registro</p>
           <div class="grid grid-cols-2 gap-3">
             <button
-              @click="tipo = 'entrada'"
+              @click="cambiarTipo('entrada')"
               class="py-3 rounded-xl text-sm font-medium transition border-2"
               :class="
                 tipo === 'entrada'
@@ -24,7 +24,7 @@
               Entrada
             </button>
             <button
-              @click="tipo = 'salida'"
+              @click="cambiarTipo('salida')"
               class="py-3 rounded-xl text-sm font-medium transition border-2"
               :class="
                 tipo === 'salida'
@@ -37,51 +37,53 @@
           </div>
         </div>
 
-        <!-- Cámara QR -->
+        <!-- Scanner físico / manual (primero: es lo que más se usa) -->
         <div class="bg-white rounded-2xl border border-[#ece9f8] p-4">
-          <div class="flex items-center justify-between mb-3">
-            <p class="text-xs font-medium text-[#6B7280]">Cámara</p>
-            <button
-              @click="toggleCamara"
-              class="text-xs px-3 py-1.5 rounded-lg border border-[#ece9f8] text-[#6B4FBB] hover:bg-[#F4F2FB] transition"
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <p class="text-xs font-medium text-[#6B7280]">Scanner — QR, código de barras o CURP</p>
+            <span
+              class="flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full"
+              :class="cola.length ? 'bg-[#FFF4DB] text-[#9A6700]' : 'bg-[#E1F5EE] text-[#0F6E56]'"
             >
-              {{ camaraActiva ? 'Detener' : 'Activar cámara' }}
-            </button>
+              <span
+                class="w-1.5 h-1.5 rounded-full"
+                :class="cola.length ? 'bg-[#F0B429] animate-pulse' : 'bg-[#1D9E75]'"
+              ></span>
+              {{ cola.length ? `Procesando ${cola.length}…` : 'Listo para escanear' }}
+            </span>
           </div>
-          <div
-            id="qr-reader"
-            class="w-full rounded-xl overflow-hidden bg-[#F8F7FC] border border-[#ece9f8]"
-            style="min-height: 200px"
-          >
-            <div
-              v-if="!camaraActiva"
-              class="flex items-center justify-center h-48 text-[#C4B8F0] text-sm"
-            >
-              Cámara desactivada
-            </div>
-          </div>
-        </div>
-
-        <!-- Campo de texto (scanner físico) -->
-        <div class="bg-white rounded-2xl border border-[#ece9f8] p-4">
-          <p class="text-xs font-medium text-[#6B7280] mb-3">Scanner físico / manual</p>
           <div class="flex gap-2">
             <input
-              v-model="uuidManual"
+              v-model="codigoManual"
               ref="inputManual"
               type="text"
-              placeholder="Escanea o escribe el UUID..."
-              class="flex-1 px-4 py-2.5 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-sm text-[#1E1252] placeholder-[#C4B8F0] focus:outline-none focus:border-[#6B4FBB] transition font-mono"
-              @keyup.enter="registrar(uuidManual)"
+              :inputmode="tecladoVirtual ? 'text' : 'none'"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="done"
+              placeholder="Escanea o escribe CURP…"
+              class="flex-1 min-w-0 px-4 py-3 rounded-xl border border-[#ece9f8] bg-[#F8F7FC] text-base sm:text-sm text-[#1E1252] placeholder-[#C4B8F0] focus:outline-none focus:border-[#6B4FBB] transition font-mono"
+              @keydown.enter.prevent="enviarManual"
+              @keydown.tab.prevent="enviarManual"
+              @input="autoEnviarSiCompleto"
             />
             <button
-              @click="registrar(uuidManual)"
-              :disabled="!uuidManual || registrando"
-              class="px-4 py-2.5 rounded-xl bg-[#6B4FBB] hover:bg-[#5a3faa] text-white text-sm transition disabled:opacity-60"
+              @click="enviarManual"
+              :disabled="!codigoManual.trim()"
+              class="px-4 py-3 rounded-xl bg-[#6B4FBB] hover:bg-[#5a3faa] text-white text-sm transition disabled:opacity-60 flex-shrink-0"
             >
-              {{ registrando ? '...' : 'Registrar' }}
+              Registrar
             </button>
           </div>
+          <button
+            type="button"
+            class="mt-2 text-xs text-[#6B4FBB] underline underline-offset-2"
+            @click="alternarTeclado"
+          >
+            {{ tecladoVirtual ? 'Ocultar teclado (usar scanner)' : '⌨️ Escribir a mano' }}
+          </button>
         </div>
 
         <!-- Resultado del último registro -->
@@ -99,9 +101,9 @@
             >
               {{ ultimoRegistro.exito ? '✓' : '✗' }}
             </div>
-            <div>
+            <div class="min-w-0">
               <p
-                class="text-sm font-medium"
+                class="text-sm font-medium truncate"
                 :class="ultimoRegistro.exito ? 'text-[#0F6E56]' : 'text-[#A32D2D]'"
               >
                 {{ ultimoRegistro.nombre }}
@@ -113,7 +115,7 @@
                 {{ ultimoRegistro.mensaje }}
               </p>
             </div>
-            <div class="ml-auto text-right">
+            <div class="ml-auto text-right flex-shrink-0">
               <p
                 class="text-xs font-medium"
                 :class="ultimoRegistro.exito ? 'text-[#0F6E56]' : 'text-[#A32D2D]'"
@@ -123,16 +125,41 @@
             </div>
           </div>
         </div>
+
+        <!-- Cámara QR -->
+        <div class="bg-white rounded-2xl border border-[#ece9f8] p-4">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-xs font-medium text-[#6B7280]">Cámara</p>
+            <button
+              @click="toggleCamara"
+              class="text-xs px-3 py-1.5 rounded-lg border border-[#ece9f8] text-[#6B4FBB] hover:bg-[#F4F2FB] transition"
+            >
+              {{ camaraActiva ? 'Detener' : 'Activar cámara' }}
+            </button>
+          </div>
+          <div
+            id="qr-reader"
+            class="w-full rounded-xl overflow-hidden bg-[#F8F7FC] border border-[#ece9f8]"
+            :style="{ minHeight: camaraActiva ? '200px' : '0' }"
+          >
+            <div
+              v-if="!camaraActiva"
+              class="flex items-center justify-center h-24 sm:h-40 text-[#C4B8F0] text-sm"
+            >
+              Cámara desactivada
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Lista de asistencias del día -->
       <div class="bg-white rounded-2xl border border-[#ece9f8] overflow-hidden">
-        <div class="px-5 py-4 border-b border-[#F4F2FB] flex items-center justify-between">
+        <div class="px-4 sm:px-5 py-4 border-b border-[#F4F2FB] flex flex-wrap items-center justify-between gap-2">
           <div>
             <p class="text-sm font-medium text-[#1E1252]">Registros de hoy</p>
             <p class="text-xs text-[#9B89D4]">{{ asistencias.length }} registros</p>
           </div>
-          <div class="flex gap-2">
+          <div class="flex gap-1 sm:gap-2">
             <button
               @click="filtroTipo = ''"
               class="text-xs px-2.5 py-1 rounded-lg transition"
@@ -169,13 +196,15 @@
           </div>
         </div>
 
-        <div v-if="loadingLista" class="p-8 text-center text-sm text-[#9B89D4]">Cargando...</div>
+        <div v-if="loadingLista && !asistencias.length" class="p-8 text-center text-sm text-[#9B89D4]">
+          Cargando...
+        </div>
 
-        <div v-else class="overflow-y-auto" style="max-height: 520px">
+        <div v-else class="overflow-y-auto max-h-[60dvh] lg:max-h-[520px]">
           <div
             v-for="a in asistenciasFiltradas"
             :key="a.id"
-            class="flex items-center gap-3 px-5 py-3 border-b border-[#F8F7FC] hover:bg-[#F8F7FC] transition"
+            class="flex items-center gap-3 px-4 sm:px-5 py-3 border-b border-[#F8F7FC] hover:bg-[#F8F7FC] transition"
           >
             <div
               class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0"
@@ -187,7 +216,7 @@
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-[#1E1252] truncate">{{ a.alumno }}</p>
-              <p class="text-xs text-[#9B89D4]">{{ a.grado }} — Grupo {{ a.grupo }}</p>
+              <p v-if="a.grado || a.grupo" class="text-xs text-[#9B89D4]">{{ a.grado }} — Grupo {{ a.grupo }}</p>
             </div>
             <div class="text-right flex-shrink-0">
               <span
@@ -216,41 +245,88 @@
 </template>
 
 <script setup>
+import { TZ_MX } from '@/utils/fecha'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Html5Qrcode } from 'html5-qrcode'
 import api from '@/api/axios'
 import swal from '@/plugins/swal'
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * ESCÁNER A PRUEBA DE ATORONES
+ * - Cada lectura entra a una COLA y se procesa una por una; el input se limpia
+ *   al instante, así que el siguiente escaneo nunca se mezcla con el anterior.
+ * - Funciona aunque el input NO tenga el foco (escucha el teclado global y
+ *   distingue al scanner por la velocidad con la que "teclea").
+ * - Ignora lecturas repetidas del mismo código durante unos segundos.
+ * - Cada petición tiene timeout: si el internet se cae, la cola sigue.
+ * - En celular no abre el teclado en pantalla (inputmode="none") salvo que
+ *   se pida "Escribir a mano".
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+const DUPLICADO_MS = 4000 // mismo código dentro de este tiempo = se ignora
+const TIMEOUT_MS = 10000 // tiempo máximo por petición
+// Tolerante: si el navegador está ocupado redibujando, las teclas del scanner
+// pueden llegar con retraso; con márgenes cortos el código se partía.
+const SCANNER_MAX_MS_ENTRE_TECLAS = 400 // pausa mayor = empieza un código nuevo
+const SCANNER_FIN_INACTIVIDAD_MS = 500 // scanner sin Enter: se envía si el código ya está completo
+const MIN_LARGO_CODIGO = 6
+
 const tipo = ref('entrada')
-const uuidManual = ref('')
-const registrando = ref(false)
+const codigoManual = ref('')
 const camaraActiva = ref(false)
 const ultimoRegistro = ref(null)
 const asistencias = ref([])
 const loadingLista = ref(false)
 const filtroTipo = ref('')
 const inputManual = ref(null)
+const tecladoVirtual = ref(false)
+const cola = ref([]) // códigos pendientes
+let procesando = false
 let html5Qr = null
+let recargaTimer = null
+let autoEnvioTimer = null
+const recientes = new Map() // codigo → timestamp
 
 const fechaHoy = new Date().toLocaleDateString('es-MX', {
+  timeZone: TZ_MX,
   weekday: 'long',
   day: '2-digit',
   month: 'long',
   year: 'numeric',
 })
 
-onMounted(() => cargarAsistencias())
-onUnmounted(() => detenerCamara())
+onMounted(() => {
+  cargarAsistencias()
+  window.addEventListener('keydown', onTeclaGlobal, true)
+  enfocar()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onTeclaGlobal, true)
+  clearTimeout(recargaTimer)
+  clearTimeout(autoEnvioTimer)
+  clearTimeout(bufferTimer)
+  detenerCamara()
+})
 
 async function cargarAsistencias() {
   loadingLista.value = true
   try {
-    const { data } = await api.get('/asistencia/hoy')
+    const { data } = await api.get('/asistencia/hoy', { timeout: TIMEOUT_MS })
     asistencias.value = data.asistencias
   } catch {
+    // si falla, se conserva la lista actual
   } finally {
     loadingLista.value = false
   }
+}
+
+/** Recarga la lista sólo cuando ya no hay escaneos en cola (no bloquea) */
+function programarRecarga() {
+  clearTimeout(recargaTimer)
+  recargaTimer = setTimeout(() => {
+    if (!cola.value.length) cargarAsistencias()
+  }, 1500)
 }
 
 const asistenciasFiltradas = computed(() => {
@@ -258,23 +334,71 @@ const asistenciasFiltradas = computed(() => {
   return asistencias.value.filter((a) => a.tipo === filtroTipo.value)
 })
 
-async function registrar(uuid) {
-  if (!uuid || registrando.value) return
-  if (!tipo.value) {
-    swal.fire({
-      title: 'Selecciona el tipo',
-      text: 'Elige entrada o salida antes de registrar.',
-      icon: 'warning',
-    })
-    return
-  }
+function cambiarTipo(t) {
+  tipo.value = t
+  recientes.clear() // al cambiar de entrada a salida se puede volver a escanear al mismo alumno
+  enfocar()
+}
 
-  registrando.value = true
+/* ─── Normalización ─────────────────────────────────────────────────────── */
+
+/**
+ * Limpia lo que manda el scanner. Si el scanner está configurado en inglés y el
+ * equipo en español, los guiones del UUID llegan como ' / ? etc.: se corrigen.
+ */
+function normalizar(raw) {
+  let c = String(raw || '')
+    .replace(/[\u0000-\u001F\u007F]/g, '') // caracteres de control
+    .trim()
+
+  const uuidMal = /^([0-9a-f]{8}).([0-9a-f]{4}).([0-9a-f]{4}).([0-9a-f]{4}).([0-9a-f]{12})$/i
+  const m = c.match(uuidMal)
+  if (m) return `${m[1]}-${m[2]}-${m[3]}-${m[4]}-${m[5]}`.toLowerCase()
+
+  return c
+}
+
+/* ─── Cola ──────────────────────────────────────────────────────────────── */
+
+function encolar(raw) {
+  const codigo = normalizar(raw)
+  if (codigo.length < MIN_LARGO_CODIGO) return
+
+  const ahora = Date.now()
+  const clave = `${tipo.value}|${codigo.toUpperCase()}`
+  const ultimo = recientes.get(clave)
+  if (ultimo && ahora - ultimo < DUPLICADO_MS) return // doble lectura del mismo código
+  recientes.set(clave, ahora)
+
+  // limpiar entradas viejas del mapa
+  for (const [k, t] of recientes) if (ahora - t > DUPLICADO_MS * 3) recientes.delete(k)
+
+  cola.value.push({ codigo, tipo: tipo.value })
+  procesarCola()
+}
+
+async function procesarCola() {
+  if (procesando) return
+  procesando = true
   try {
-    const { data } = await api.post('/asistencia/registrar', {
-      alumno_uuid: uuid.trim(),
-      tipo: tipo.value,
-    })
+    while (cola.value.length) {
+      const item = cola.value[0]
+      await registrar(item)
+      cola.value.shift()
+    }
+  } finally {
+    procesando = false
+    programarRecarga()
+  }
+}
+
+async function registrar({ codigo, tipo: tipoReg }) {
+  try {
+    const { data } = await api.post(
+      '/asistencia/registrar',
+      { alumno_uuid: codigo, tipo: tipoReg },
+      { timeout: TIMEOUT_MS },
+    )
 
     ultimoRegistro.value = {
       exito: true,
@@ -284,24 +408,127 @@ async function registrar(uuid) {
     }
     beep(true)
 
-    uuidManual.value = ''
-    await cargarAsistencias()
+    // se agrega a la lista al instante, sin esperar a recargar
+    asistencias.value.unshift({
+      id: `tmp-${Date.now()}-${Math.random()}`,
+      alumno: data.alumno,
+      grado: '',
+      grupo: '',
+      tipo: data.tipo,
+      hora: data.hora,
+    })
   } catch (e) {
-    const msg = e.response?.data?.messages?.error || 'Error al registrar.'
+    let msg = e.response?.data?.messages?.error || e.response?.data?.message
+    if (!msg) {
+      msg =
+        e.code === 'ECONNABORTED'
+          ? 'El servidor tardó demasiado. Vuelve a escanear.'
+          : !navigator.onLine
+            ? 'Sin conexión a internet.'
+            : 'Error al registrar.'
+      // si falló por red, permitir reintentar el mismo código de inmediato
+      recientes.delete(`${tipoReg}|${codigo.toUpperCase()}`)
+    }
     ultimoRegistro.value = {
       exito: false,
-      nombre: 'Error',
+      nombre: e.response?.status === 409 ? 'Ya registrado' : 'Error',
       mensaje: msg,
-      hora: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
+      hora: new Date().toLocaleTimeString('es-MX', {
+        timeZone: TZ_MX,
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
     }
     beep(false)
-  } finally {
-    registrando.value = false
-    // Enfocar el input para el siguiente escaneo
-    await nextTick()
-    inputManual.value?.focus()
   }
 }
+
+/* ─── Input (scanner con foco / escritura manual) ───────────────────────── */
+
+function enviarManual() {
+  clearTimeout(autoEnvioTimer)
+  const valor = codigoManual.value
+  codigoManual.value = '' // limpiar YA para que el siguiente escaneo no se pegue
+  encolar(valor)
+  enfocar()
+}
+
+/** Por si el scanner no manda Enter: si ya es un UUID o CURP completo, se envía solo */
+function esCodigoCompleto(raw) {
+  const v = normalizar(raw)
+  return (
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v) ||
+    /^[A-Z]{4}\d{6}[HMX][A-Z]{5}[A-Z0-9]\d$/i.test(v)
+  )
+}
+
+function autoEnviarSiCompleto() {
+  clearTimeout(autoEnvioTimer)
+  if (tecladoVirtual.value) return // escribiendo a mano: esperar a que presione Registrar
+  if (esCodigoCompleto(codigoManual.value)) autoEnvioTimer = setTimeout(enviarManual, 300)
+}
+
+function alternarTeclado() {
+  tecladoVirtual.value = !tecladoVirtual.value
+  // re-enfocar para que el celular muestre/oculte el teclado
+  inputManual.value?.blur()
+  setTimeout(enfocar, 50)
+}
+
+function enfocar() {
+  nextTick(() => {
+    const activo = document.activeElement
+    const enOtroCampo =
+      activo &&
+      activo !== inputManual.value &&
+      ['INPUT', 'TEXTAREA', 'SELECT'].includes(activo.tagName)
+    if (!enOtroCampo) inputManual.value?.focus({ preventScroll: true })
+  })
+}
+
+/* ─── Teclado global: el scanner funciona aunque el input no tenga foco ─── */
+
+let buffer = ''
+let ultimaTecla = 0
+let bufferTimer = null
+
+function onTeclaGlobal(e) {
+  const t = e.target
+  // Si escribe en nuestro input o en otro campo, no interferir
+  if (t === inputManual.value) return
+  if (t && (['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable)) return
+  if (e.ctrlKey || e.altKey || e.metaKey) return
+
+  const ahora = performance.now()
+  const rapido = ahora - ultimaTecla < SCANNER_MAX_MS_ENTRE_TECLAS
+  ultimaTecla = ahora
+
+  if (e.key === 'Enter' || e.key === 'Tab') {
+    if (buffer.length >= MIN_LARGO_CODIGO) {
+      e.preventDefault()
+      encolar(buffer)
+    }
+    buffer = ''
+    clearTimeout(bufferTimer)
+    return
+  }
+
+  if (e.key.length !== 1) return // Shift, flechas, etc.
+
+  // Si la tecla llegó lenta, es una persona: empezar buffer nuevo
+  buffer = rapido ? buffer + e.key : e.key
+
+  clearTimeout(bufferTimer)
+  bufferTimer = setTimeout(() => {
+    // scanner configurado sin Enter al final: solo si el código ya está completo
+    if (esCodigoCompleto(buffer)) {
+      encolar(buffer)
+      buffer = ''
+    }
+  }, SCANNER_FIN_INACTIVIDAD_MS)
+}
+
+/* ─── Cámara ────────────────────────────────────────────────────────────── */
 
 async function toggleCamara() {
   if (camaraActiva.value) {
@@ -319,11 +546,15 @@ async function iniciarCamara() {
   try {
     await html5Qr.start(
       { facingMode: 'environment' },
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      async (decodedText) => {
-        // QR leído — registrar automáticamente
-        await registrar(decodedText)
+      {
+        fps: 10,
+        // recuadro proporcional a la pantalla (en celular 250px fijos no caben)
+        qrbox: (w, h) => {
+          const lado = Math.floor(Math.min(w, h) * 0.7)
+          return { width: lado, height: lado }
+        },
       },
+      (decodedText) => encolar(decodedText), // la cola evita lecturas dobles
       () => {}, // error silencioso mientras busca el QR
     )
   } catch (e) {
@@ -347,6 +578,8 @@ async function detenerCamara() {
   camaraActiva.value = false
 }
 
+/* ─── Utilidades ────────────────────────────────────────────────────────── */
+
 function iniciales(nombre) {
   if (!nombre) return '?'
   return nombre
@@ -357,20 +590,29 @@ function iniciales(nombre) {
     .toUpperCase()
 }
 
+// Un solo AudioContext reutilizado: crear uno por escaneo agota los del navegador
+// y deja de sonar / se alenta después de varios escaneos.
+let audioCtx = null
 function beep(exito = true) {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)()
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
+  try {
+    audioCtx ||= new (window.AudioContext || window.webkitAudioContext)()
+    if (audioCtx.state === 'suspended') audioCtx.resume()
 
-  osc.connect(gain)
-  gain.connect(ctx.destination)
+    const osc = audioCtx.createOscillator()
+    const gain = audioCtx.createGain()
+    osc.connect(gain)
+    gain.connect(audioCtx.destination)
 
-  osc.frequency.value = exito ? 880 : 300
-  osc.type = exito ? 'sine' : 'square'
-  gain.gain.setValueAtTime(0.3, ctx.currentTime)
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3)
+    osc.frequency.value = exito ? 880 : 300
+    osc.type = exito ? 'sine' : 'square'
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3)
 
-  osc.start(ctx.currentTime)
-  osc.stop(ctx.currentTime + 0.3)
+    osc.start(audioCtx.currentTime)
+    osc.stop(audioCtx.currentTime + 0.3)
+  } catch {}
+
+  // vibración en celular
+  if (navigator.vibrate) navigator.vibrate(exito ? 80 : [80, 60, 80])
 }
 </script>
